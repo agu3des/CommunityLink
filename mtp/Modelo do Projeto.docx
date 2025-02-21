@@ -1,0 +1,209 @@
+Instituto Federal da Paraíba 
+Unidade acadêmica de Informática
+CommunityLink: Plataforma Digital para Engajamento e Gestão de Voluntariado em Ações Comunitárias e Ambientais
+Orientador: não tem
+Equipe: Ananda Guedes do Ó 
+João Pessoa, 20 de dezembro de 2024
+
+
+SUMÁRIO
+1. FORMULAÇÃO DO PROBLEMA	3
+2. JUSTIFICATIVA	3
+3. FUNDAMENTAÇÃO TEÓRICA	5
+4. OBJETIVOS (GERAL E ESPECÍFICOS)	6
+5. METODOLOGIA	7
+6. CRONOGRAMA	9
+REFERÊNCIAS	11
+
+
+
+1. Formulação do problema
+	  A participação em ações comunitárias é essencial para a promoção de mudanças sociais e ambientais. Contudo, a falta de uma plataforma centralizada para conectar voluntários e organizadores de forma eficiente resulta em uma série de desafios: dificuldades na gestão de voluntários, desmotivação devido à falta de acompanhamento e transparência nas atividades, e dificuldades em medir o impacto real das ações realizadas. Esses problemas impactam tanto os voluntários, que não encontram um ambiente atrativo e bem estruturado, quanto os organizadores, que enfrentam barreiras para encontrar voluntários qualificados e engajados.
+         Pesquisas anteriores destacam a importância das plataformas digitais no engajamento comunitário. Segundo a Revista de Administração Mackenzie 22.6 (2021), sistemas digitais bem projetados podem aumentar a adesão de voluntários em até 40%, facilitando a participação e criando novas oportunidades de interação, o que é essencial para fortalecer o engajamento nas ações comunitárias. Atrelado a isso, LE, G. H.; AARTSEN (2022) aponta que a transparência no impacto das ações é crucial para a retenção de voluntários a longo prazo. O estudo enfatiza que a falta de informações claras sobre os resultados das atividades reduz o interesse e a adesão dos voluntários. No entanto, muitos estudos carecem de uma abordagem que conecte diretamente tecnologia e voluntariado em um sistema integrado.
+          Os estudos existentes não exploram de forma detalhada como implementar funcionalidades que conciliam engajamento, transparência e impacto em uma única solução. Além disso, faltam metodologias que priorizem a experiência do usuário, tanto para voluntários quanto para organizadores.
+          Este projeto abordará o problema ao desenvolver e testar um protótipo de plataforma digital que funcione como um ecossistema completo, integrando cadastro de ações, conexão entre partes interessadas e ferramentas de análise de impacto. O foco será criar uma solução escalável e acessível, otimizando a comunicação e gestão de ações comunitárias.
+
+2. Justificativa
+	A pesquisa é relevante porque promove soluções para desafios concretos enfrentados em ações comunitárias, com potencial de ampliação para contextos nacionais e internacionais, além de contribuir diretamente para o fortalecimento do impacto social e ambiental dessas iniciativas. Atualmente, a falta de ferramentas centralizadas e acessíveis limita o alcance e a eficiência das ações realizadas por voluntários e organizadores. Nesse cenário, este estudo busca não apenas facilitar a conexão entre essas partes, mas também aprimorar os processos de gestão e acompanhamento das atividades, promovendo um ecossistema mais integrado e eficiente.
+    Ao conectar voluntários e organizadores de forma estratégica, espera-se aumentar significativamente a participação e o engajamento, resultando em maior impacto no meio voluntário. Assim, a pesquisa oferece ainda contribuições valiosas para a área de tecnologia aplicada ao âmbito do socioambiental, uma vez que inova ao propor uma plataforma que alia tecnologia, gestão e transparência, abrindo novas perspectivas para o voluntariado e o engajamento comunitário.
+
+    As contribuições podem ser detalhadas em quatro dimensões principais:
+    Tecnológico-científicas: O estudo prototipará uma solução inovadora, que pode servir como modelo para futuros projetos tecnológicos voltados ao terceiro setor, contribuindo para o avanço da tecnologia aplicada à gestão de ações comunitárias.
+    Sociais: Ao facilitar o acesso a iniciativas voluntárias para diferentes populações, a plataforma tem como intenção promover a inclusão e ampliar a participação de comunidades diversas, democratizando o voluntariado e incentivando o engajamento de grupos que antes não participavam ativamente.
+    Ao combinar inovação tecnológica e engajamento social, esta pesquisa se posiciona como uma importante contribuição para atender às necessidades atuais do terceiro setor, fortalecendo sua capacidade de gerar impacto positivo na sociedade.
+
+3. Fundamentação Teórica
+	Os estudos de Revista de Administração Mackenzie 22.6 (2021) abordam a crescente transformação digital e sua relevância no engajamento comunitário. A pesquisa enfatiza que a constante adaptação das plataformas digitais é essencial para manter a eficácia e a adesão dos usuários. No contexto do voluntariado, isso significa que as plataformas precisam ser intuitivas, acessíveis e eficientes, garantindo que os voluntários se sintam motivados a participar de maneira contínua. O âmbito digital não apenas facilita a participação, mas também cria novas oportunidades de interação, aumentando a mobilização e a conectividade das pessoas com as causas sociais. A pesquisa reforça a ideia de que, para aumentar a adesão e o impacto do voluntariado, as tecnologias precisam ser simples e funcionais, alinhadas com as necessidades e expectativas dos usuários.
+    Assim também, a Equity and volunteers. Legal Studies (2018) investiga as motivações e barreiras para a participação no voluntariado, com foco em como diferentes fatores sociais e psicológicos afetam a decisão de se envolver em ações comunitárias. O estudo destaca que, além da necessidade de plataformas acessíveis e funcionais, a motivação intrínseca dos voluntários, como a busca por um propósito ou o desejo de fazer a diferença, é um elemento fundamental para aumentar a adesão. A pesquisa também sugere que as plataformas digitais podem desempenhar um papel essencial em facilitar a conexão entre as necessidades da comunidade e as habilidades dos voluntários, mas ressalta que a experiência do usuário deve ser adaptada para refletir essas motivações pessoais, criando um ambiente onde os voluntários se sintam valorizados e engajados a longo prazo.
+    Além disso, a pesquisa de Digital platform for social innovation: Insights from volunteering (2020) foca na utilização de plataformas digitais para impulsionar a inovação social por meio do voluntariado. A pesquisa indica que as plataformas não apenas facilitam o engajamento de voluntários, mas também ajudam a criar novos modelos de colaboração e apoio entre organizações e indivíduos. A integração de tecnologias em ações de voluntariado permite que as iniciativas sociais ganhem visibilidade, otimizem processos e promovam o impacto das atividades. Além disso, o estudo aponta que, ao utilizar ferramentas digitais, é possível rastrear e medir o impacto das ações de forma mais precisa, o que não só reforça a transparência, mas também incentiva mais pessoas a se envolverem ao verem resultados concretos das suas contribuições.
+    Esses três estudos, embora abordem diferentes aspectos do voluntariado e do meio digital, convergem na importância da adaptação tecnológica para aumentar a eficácia das ações sociais. Eles destacam que a experiência do usuário, a acessibilidade das plataformas e a transparência nos resultados são fatores essenciais para fortalecer a participação e o engajamento dos voluntários. Ao integrar essas ideias, é possível entender como o desenvolvimento de plataformas mais inclusivas e funcionais pode contribuir para o crescimento do voluntariado e para a maximização do impacto social das iniciativas.
+
+4. Objetivos Geral e Específicos 
+    Objetivo Geral:
+        Desenvolver e testar um protótipo de plataforma digital que conecta voluntários e organizadores de maneira eficiente, promovendo maior engajamento, transparência e otimização na gestão de ações comunitárias. A solução busca atuar como um ecossistema completo, facilitando desde o cadastro de iniciativas até o acompanhamento dos resultados sociais e ambientais.
+    Objetivos Específicos:
+        Identificar os principais desafios enfrentados por voluntários e organizadores: Realizar pesquisas qualitativas, utilizando de base análise de conteúdos, e quantitativas, por meio de questionário, para compreender as dificuldades enfrentadas pelos usuários na participação e gestão de ações comunitárias. Isso inclui barreiras tecnológicas, desafios de comunicação e problemas relacionados à organização e medição de impacto.
+
+
+Projetar uma interface acessível e intuitiva:
+    Desenvolver o design da plataforma com base nos princípios de interação humano-computador em acordo com as heurísticas de Nielsen, priorizando acessibilidade, flexibilidade e usabilidade. O objetivo é garantir que diferentes perfis de usuários, incluindo aqueles com menor familiaridade tecnológica, possam utilizar a plataforma sem dificuldades.
+
+Implementar funcionalidades para cadastro, conexão e rastreamento de ações:
+    Criar funcionalidades que permitam o cadastro detalhado de iniciativas, a conexão automatizada entre voluntários e organizadores com base em preferências e habilidades, e o rastreamento em tempo real das ações realizadas, incluindo métricas de impacto.
+    Criar relatórios sobre o impacto das ações realizadas:
+    Desenvolver uma funcionalidade que gere relatórios automáticos, detalhando os resultados alcançados em cada iniciativa comunitária. Esses relatórios devem incluir dados quantitativos e qualitativos, como número de voluntários engajados, recursos mobilizados, beneficiários atendidos e impacto ambiental ou social gerado.
+    Avaliar o impacto do protótipo em testes reais:
+    Realizar testes de usabilidade e estudos de caso em ambientes controlados e reais para medir a eficiência da plataforma no aumento do engajamento e na melhora da gestão das ações. Coletar feedback de voluntários e organizadores para iterar e refinar o protótipo.
+
+5. Metodologia
+Etapas de Desenvolvimento:
+    Revisão Bibliográfica:
+        Realizar um estudo detalhado sobre plataformas digitais existentes voltadas para voluntariado e gestão comunitária. Explorar conceitos teóricos em interação humano-computador, usabilidade e engajamento digital, além de identificar lacunas tecnológicas e oportunidades de inovação.
+    Coleta de Dados:
+        Conduzir entrevistas semiestruturadas com voluntários e organizadores de ações comunitárias para compreender suas necessidades, expectativas e principais dificuldades. Complementar com questionários para captar dados quantitativos sobre os desafios enfrentados.
+    Prototipagem:
+        Desenvolver um protótipo funcional da plataforma utilizando frameworks modernos, como Angular para a interface front-end e Node.js para o back-end. A base de dados será estruturada com PostgreSQL, garantindo eficiência e segurança no armazenamento de informações.
+    Testes e Avaliação:
+        Realizar testes piloto do protótipo com grupos de voluntários e organizadores, que participaram da pesquisa quantitativa, em situações reais de uso. Coletar feedback por meio de observações, entrevistas e métricas de desempenho da plataforma. Identificar melhorias necessárias e iterar no desenvolvimento.
+    Análise de Impacto:
+        Avaliar o impacto do sistema na gestão e engajamento das ações comunitárias. Medir indicadores como aumento no número de voluntários conectados, redução de tempo na organização das iniciativas e percepção dos usuários sobre a transparência e eficácia da plataforma.
+
+
+Ferramentas e Tecnologias:
+    Hardware:
+        Computadores com configuração adequada para desenvolvimento e testes da aplicação, garantindo desempenho na execução de frameworks e simulação de cenários reais.
+    Software:
+        PostgreSQL: Banco de dados relacional para armazenar informações sobre voluntários, organizadores, ações e métricas de impacto.
+        Angular: Framework front-end para criação de uma interface dinâmica, responsiva e amigável.
+        Node.js: Plataforma back-end para construir uma API robusta e escalável, integrando front-end e banco de dados.
+    Metodologias:
+        Design Centrado no Usuário (DCU): Priorização da experiência do usuário em todas as fases do desenvolvimento, desde o design até os testes.
+        Análise de Dados Qualitativos e Quantitativos: Utilização de ferramentas analíticas para interpretar os resultados obtidos nas entrevistas, testes e métricas da plataforma.
+
+6. Cronograma
+Etapas | Número | Descrição
+1. Revisão Bibliográfica: Realizar um estudo sobre plataformas existentes, interação humano-computador, e identificar lacunas e oportunidades tecnológicas.
+2. Coleta de Dados: Conduzir entrevistas e questionários com voluntários e organizadores para entender desafios e necessidades.
+3. Prototipagem: Desenvolver um protótipo funcional utilizando Angular, Node.js e PostgreSQL.
+4. Testes e Avaliação: Realizar testes piloto com usuários reais, coletar feedback e ajustar o protótipo conforme necessário.
+5. Análise de Impacto: Avaliar o impacto do protótipo na gestão e engajamento de ações comunitárias, gerando relatórios conclusivos.
+6. Relatórios Finais: Documentar todas as etapas e resultados da pesquisa, destacando as contribuições teóricas e práticas.
+
+
+
+Nº da atividade
+PERÍODO (DE DEZEMBRO DE 2024 A ABRIL DE 2024)
+Dez
+Jan
+Fev
+Mar
+Abr
+1
+X
+X
+2
+X
+X
+3
+X
+X
+4
+X
+5
+X
+X
+6
+X
+
+
+1. Dezembro a Janeiro – Revisão Bibliográfica:
+   - Levantamento de artigos científicos e materiais técnicos relacionados.  
+   - Identificação de melhores práticas e estudos de caso relevantes.  
+2. Janeiro a Fevereiro – Coleta de Dados:
+   - Planejamento e execução de entrevistas semiestruturadas.  
+   - Análise preliminar dos dados coletados para orientar o design do protótipo.  
+3. Fevereiro a Março – Prototipagem:
+   - Criação de wireframes e mockups.  
+   - Implementação do protótipo funcional com Angular (front-end), Node.js (back-end), e PostgreSQL (banco de dados).  
+4. Março – Testes e Avaliação:
+   - Execução de testes de usabilidade com grupos controlados.  
+   - Coleta de métricas como tempo de navegação, eficiência na conexão entre usuários e taxa de satisfação.  
+5. Março a Abril – Análise de Impacto:
+   - Avaliação dos resultados obtidos nos testes.  
+   - Identificação de melhorias e impacto da solução na experiência de usuários.  
+6. Abril – Relatórios Finais:
+   - Consolidação de dados e elaboração de relatórios sobre contribuições práticas e teóricas da pesquisa.  
+   - Redação final com base em feedbacks coletados e análise do impacto.  
+
+
+Referências
+    SCIELO HUMANAS. Transformação Digital: a constante necessidade de adaptação. Blog SciELO Humanas, 22 dez. 2021. 
+    Disponível em: https://humanas.blog.scielo.org/blog/2021/12/22/transformacao-digital-a-constante-necessidade-de-adaptacao/.
+
+
+    LE, G. H.; AARTSEN, M. Understanding volunteering intensity in older volunteers. Ageing and Society, 12 out. 2022. 
+    Disponível em: https://www.cambridge.org/core/journals/ageing-and-society/article/understanding-volunteering-intensity-in-older-volunteers/50C99109202240BDC04E15630026EFBD. Acesso em: 20 dez. 2024 
+
+
+    CAMBRIDGE UNIVERSITY PRESS. Equity and volunteers. Legal Studies, 2018. 
+    Disponível em: https://www.cambridge.org/core/journals/legal-studies/article/abs/equity-and-volunteers/136AD3C6C6B31FE4C5B03E4499090DDA.
+
+
+    WILEY ONLINE LIBRARY. Digital platform for social innovation: Insights from volunteering. Corporate Social Responsibility and Environmental Management, 2020. 
+    Disponível em: https://onlinelibrary.wiley.com/doi/full/10.1111/caim.12499.
+
+
+    SCIELO BRASIL. O Voluntariado em questão: a subjetividade permitida. Psicologia & Sociedade, 2020. 
+    Disponível em: https://doi.org/10.1590/S1414-98932008000300003.
+
+
+    IBICT. Informação, voluntariado e redes digitais. Revista IBICT, 2019. 
+    Disponível em: http://ridi.ibict.br/handle/123456789/717.
+
+
+    E-CAMPÓS. A projeção de interesses em redes sociais de voluntariado. E-CAMPÓS Journal, 2021. 
+    Disponível em: https://e-compos.org.br/e-compos/article/view/162.
+
+
+    REDALYC. As motivações no trabalho voluntário. Revista Psicologia & Ciência, 2015. 
+    Disponível em: https://www.redalyc.org/pdf/3885/388539113005.pdf.
+
+
+    PEPSIC. Significado do trabalho voluntário empresarial. Psicologia: Teoria e Pesquisa, 2015. 
+    Disponível em: https://pepsic.bvsalud.org/scielo.php?pid=S1984-66572015000200006&script=sci_arttext.
+
+
+    CAMBRIDGE UNIVERSITY PRESS. Volunteers: An Essential Component. Prehospital and Disaster Medicine, 2020. 
+    Disponível em: https://www.cambridge.org/core/journals/prehospital-and-disaster-medicine/article/volunteers-an-essential-component/8D0B3A75B36B385C66F9A5603E9961E7.
+
+
+    REPOSITORIO UNINTER. Gamificação da disciplina metodologia da pesquisa no ensino superior: estudo de caso. Google Acadêmico, 2018. Disponível em: https://repositorio.uninter.com/handle/1/330.
+
+
+    ATADOS. Atados | Plataforma de Voluntariado | Encontre Trabalho Voluntário. Atados, 2023. 
+    Disponível em: https://www.atados.com.
+
+    V-VOLUNTEER. Volunteer | A plataforma para quem quer ajudar. V-Volunteer, 2023. 
+    Disponível em: https://www.vvolunteer.com.br/.
+
+    VOLUNTÁRIOS. Campanha Seja um Voluntário. Voluntários, 2023. 
+    Disponível em: https://voluntarios.com.br/.
+
+
+    IDEALIST. Idealist: Plataforma Global de Conexão do Setor Social. Idealist, 2023. Disponível em: 
+    https://www.idealist.org/pt.
+
+    LIBEROPINION. Voluntariado - Liberopinion - Plataforma de Participação Pública. Liberopinion, 2023. 
+    Disponível em: https://liberopinion.com/voluntariado.
+
+
+    TRANSFORMA BRASIL. Transforma Brasil. Transforma Brasil, 2023. 
+    Disponível em: https://transformabrasil.com.br/.
+
+
+    WORLD PACKERS. ONGs no Brasil: conheça projetos sociais e saiba como voluntariar. Worldpackers, 2023. 
+    Disponível em: https://www.worldpackers.com/pt-BR/articles/ongs-no-brasil-voluntariado.
+
+
+    ENTRAJUDA. Programas de Voluntariado da EntraAjuda. EntraAjuda, 2023. 
+    Disponível em: https://www.entrajuda.pt/pages/introducao.
