@@ -1,4 +1,3 @@
-
 ## Administrador da Comunidade
 @startuml
 |Administrador da Comunidade|
@@ -484,6 +483,8 @@ endif
 stop
 @enduml
 
+
+## Usuário do Sistema
 @startuml
 |Usuário do Sistema|
 start
