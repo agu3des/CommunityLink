@@ -1,13 +1,6 @@
-## Criando seu problema de pesquisa 
-1) Ananda Guedes do Ó 
-2) Impacto do uso combinado de livros físicos e digitais no engajamento e aprendizado de estudantes do ensino médio em ambientes híbridos. 
-3) Problemas a Serem Resolvidos: Diferenças de engajamento entre estudantes que utilizam livros físicos e aqueles que usam livros digitais em aulas híbridas. Como a transição entre materiais digitais e físicos pode impactar o foco e a retenção do conteúdo pelos alunos. Falta de integração eficaz de livros físicos com plataformas digitais em salas de aula híbridas. 
-4) Objetivo: Explorar como o uso de livros físicos e digitais pode ser otimizado para melhorar a experiência de aprendizado e o engajamento dos alunos em ambientes híbridos, desenvolvendo estratégias que aproveitem os benefícios únicos de cada formato.
-
-
-
-
 ## Pesquisar e guardar 10 materiais 
+
+### Pesquisas acerca de voluntariado e seus impactos:
 
 1.  Título: Comparative Study on the Impact of Digital and Physical Textbooks in Hybrid Learning Environments
     URL: https://scholar.google.com/scholar?q=Comparative+Study+on+the+Impact+of+Digital+and+Physical+Textbooks+in+Hybrid+Learning+Environments 
@@ -45,3 +38,54 @@
 
 
 
+### Pesquisas acerca de plataformas de voluntariado:
+
+1. TÍTULO: "Gamificação da disciplina metodologia da pesquisa no ensino superior: estudo de caso"
+URL: https://repositorio.uninter.com/handle/1/330
+Local: Google Acadêmico
+Estratégia: Utilização das expressões-chave "gamificação" e "metodologia de pesquisa", excluindo artigos que mencionam "Kahoot", e filtrando resultados a partir de 2018.
+
+2. TÍTULO: "Atados | Plataforma de Voluntariado | Encontre Trabalho Voluntário"
+URL: https://www.atados.com.br/
+Local: Pesquisa direta na web
+Estratégia: Busca por plataformas de voluntariado no Brasil.
+
+3. TÍTULO: "Volunteer | A plataforma para quem quer ajudar"
+URL: https://www.vvolunteer.com.br/
+Local: Pesquisa direta na web
+Estratégia: Busca por plataformas de voluntariado focadas em ações humanitárias.
+
+4. TÍTULO: "Campanha Seja um Voluntário"
+URL: https://voluntarios.com.br/
+Local: Pesquisa direta na web
+Estratégia: Busca por campanhas de incentivo ao voluntariado no Brasil.
+
+5. TÍTULO: "Idealist: Plataforma Global de Conexão do Setor Social"
+URL: https://www.idealist.org/pt
+Local: Pesquisa direta na web
+Estratégia: Busca por plataformas globais de conexão para voluntariado e ações sociais.
+
+6. TÍTULO: "Voluntariado - Liberopinion - Plataforma de Participação Pública"
+URL: https://liberopinion.com/voluntariado
+Local: Pesquisa direta na web
+Estratégia: Busca por plataformas de participação pública com foco em voluntariado.
+
+7. TÍTULO: "Transforma Brasil"
+URL: https://transformabrasil.com.br/
+Local: Pesquisa direta na web
+Estratégia: Busca por iniciativas brasileiras que conectam voluntários a oportunidades de impacto social.
+
+8. TÍTULO: "ONGs no Brasil: conheça projetos sociais e saiba como voluntariar"
+URL: https://www.worldpackers.com/pt-BR/articles/ongs-no-brasil-voluntariado
+Local: Pesquisa direta na web
+Estratégia: Busca por artigos que listam ONGs brasileiras e orientam sobre voluntariado.
+
+9. TÍTULO: "Explorar - Atados | Plataforma de Voluntariado"
+URL: https://atados.com.br/vagas?remoteOnly=true
+Local: Pesquisa direta na web
+Estratégia: Busca por oportunidades de voluntariado remoto.
+
+10. TÍTULO: "PROGRAMAS DE VOLUNTARIADO DA ENTRAJUDA"
+URL: https://www.entrajuda.pt/pages/introducao
+Local: Pesquisa direta na web
+Estratégia: Busca por programas de voluntariado estruturados por organizações.
