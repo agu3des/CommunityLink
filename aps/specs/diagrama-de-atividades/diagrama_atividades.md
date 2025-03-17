@@ -24,19 +24,19 @@
 - [Capa](#capa)
   - [Histórico de revisões](#histórico-de-revisões)
   - [Sumário](#sumário)
-- [Diagrama de Atividades](#diagrama-de-classes)
-  - [Código UML](#código-uml)
+- [Diagrama de Atividades](#diagrama-de-atividades)
+  - [Código UML](uml_diagrama_atividades.md)
   - [Imagem](#imagem)
 
 ---
 ## Diagrama de Atividades
-![Diagramas de Atividades CommunityLink](/imagens/diagrama_de_atividades)
+![Diagramas de Atividades CommunityLink](images/diagrama_de_atividades.svg)
 
-**Figura 1** - Diagrama de Classes do CommunityLink
+**Figura 1** - Diagrama de Atividades do CommunityLink
 
 ## Código UML
 
-[Ver código](/uml_diagrama_atividades.md)
+[Ver código](uml_diagrama_atividades.md)
 
 
 ---

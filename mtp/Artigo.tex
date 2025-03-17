@@ -1,0 +1,184 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[brazil]{babel}   
+\usepackage[utf8]{inputenc}  
+
+\sloppy
+
+\title{CommunityLink: Plataforma Digital para Engajamento e Gestão de Voluntariado em Ações Comunitárias e Ambientais}
+
+\author{Ananda Guedes do Ó\inst{1}}
+
+\address{Instituto Federal da Paraíba (IFPB) -- João Pessoa - PB -- Brasil.\\
+  \email{ananda.o@academico.ifpb.edu.br}}
+
+\begin{document} 
+
+\maketitle
+
+\begin{abstract}
+  CommunityLink is a digital platform designed to connect volunteers with community and environmental causes. It aims to facilitate engagement through an intuitive and accessible system, ensuring efficient volunteer management. The platform integrates technologies that enhance interaction between organizations and volunteers, optimizing participation and social impact. This article presents the theoretical foundations, development methodology, and technological structure supporting CommunityLink.
+\end{abstract}
+     
+\begin{resumo} 
+  CommunityLink é uma plataforma digital desenvolvida para conectar voluntários a causas comunitárias e ambientais. Seu objetivo é facilitar o engajamento por meio de um sistema intuitivo e acessível, garantindo uma gestão eficiente do voluntariado. A plataforma integra tecnologias que potencializam a interação entre organizações e voluntários, otimizando a participação e o impacto social. Este artigo apresenta as fundamentações teóricas, a metodologia de desenvolvimento e a estrutura tecnológica que sustentam o CommunityLink.
+\end{resumo}
+
+\section{Introdução}
+O voluntariado desempenha um papel fundamental no fortalecimento social e na preservação ambiental, promovendo o engajamento cívico e a colaboração entre indivíduos e organizações. No entanto, a gestão dessas iniciativas enfrenta desafios como a dificuldade de recrutamento, a falta de comunicação eficiente entre voluntários e projetos, e a necessidade de otimizar processos administrativos. Nesse contexto, plataformas digitais surgem como ferramentas estratégicas para conectar voluntários a causas sociais de maneira mais acessível e eficaz.
+
+O \textit{CommunityLink} propõe-se como uma solução inovadora para aprimorar esse processo, oferecendo um ambiente digital intuitivo e funcional que facilita a interação entre voluntários e organizações. A plataforma visa não apenas otimizar a gestão do voluntariado, mas também fortalecer o impacto das ações comunitárias e ambientais.
+
+Este estudo tem como objetivo apresentar a proposta do CommunityLink, explorando sua fundamentação teórica, sua metodologia de desenvolvimento e as tecnologias empregadas em sua construção. A pesquisa também analisa como a plataforma pode contribuir para a mobilização de voluntários, a transparência na gestão de projetos sociais e a melhoria da experiência do usuário no engajamento digital.
+
+\section{Fundamentação Teórica}
+Os estudos publicados na Revista de Administração Mackenzie 22.6 (2021) abordam a crescente transformação digital e sua relevância no engajamento comunitário. A pesquisa enfatiza que a constante adaptação das plataformas digitais é essencial para manter sua eficácia e adesão dos usuários. No contexto do voluntariado, isso implica que as plataformas devem ser intuitivas, acessíveis e eficientes, garantindo que os voluntários se sintam motivados a participar de forma contínua. O ambiente digital não apenas facilita a participação, mas também cria novas oportunidades de interação, ampliando a mobilização e a conectividade das pessoas com as causas sociais. O estudo reforça a ideia de que, para aumentar a adesão e o impacto do voluntariado, as tecnologias precisam ser simples e funcionais, alinhadas às necessidades e expectativas dos usuários.
+
+Da mesma forma, a pesquisa Equity and Volunteers. Legal Studies (2018) investiga as motivações e barreiras para a participação no voluntariado, com foco nos fatores sociais e psicológicos que influenciam a decisão de engajamento em ações comunitárias. O estudo destaca que, além da necessidade de plataformas acessíveis e funcionais, a motivação intrínseca dos voluntários — como a busca por um propósito ou o desejo de causar um impacto positivo — é um fator fundamental para o aumento da adesão. A pesquisa também sugere que as plataformas digitais podem desempenhar um papel essencial na conexão entre as necessidades da comunidade e as habilidades dos voluntários. No entanto, ressalta que a experiência do usuário deve ser adaptada para refletir essas motivações pessoais, criando um ambiente no qual os voluntários se sintam valorizados e engajados a longo prazo.
+
+Além disso, a pesquisa Digital Platform for Social Innovation: Insights from Volunteering (2020) explora o uso de plataformas digitais para impulsionar a inovação social por meio do voluntariado. O estudo aponta que essas plataformas não apenas facilitam o engajamento de voluntários, mas também promovem novos modelos de colaboração e apoio entre organizações e indivíduos. A integração de tecnologias no voluntariado permite que iniciativas sociais ganhem visibilidade, otimizem processos e ampliem o impacto das ações. Além disso, a pesquisa destaca que o uso de ferramentas digitais possibilita o rastreamento e a mensuração do impacto das atividades de forma mais precisa, reforçando a transparência e incentivando mais pessoas a se envolverem, ao perceberem os resultados concretos de suas contribuições.
+
+Embora abordem diferentes aspectos do voluntariado e do ambiente digital, esses três estudos convergem na importância da adaptação tecnológica para potencializar a eficácia das ações sociais. Eles enfatizam que a experiência do usuário, a acessibilidade das plataformas e a transparência nos resultados são fatores essenciais para fortalecer a participação e o engajamento dos voluntários. Ao integrar essas perspectivas, é possível compreender como o desenvolvimento de plataformas mais inclusivas e funcionais pode contribuir para a expansão do voluntariado e para a maximização do impacto social das iniciativas.
+
+\section{Metodologia}
+
+\subsection{Etapas de Desenvolvimento}
+
+O desenvolvimento inicial da plataforma \textit{CommunityLink} seguiu um processo estruturado, priorizando a compreensão das necessidades dos usuários e a concepção de um protótipo visual. As etapas realizadas foram:
+
+\textbf{Levantamento de Requisitos:} Foram analisadas as necessidades funcionais e não funcionais da plataforma, considerando aspectos como usabilidade, acessibilidade e eficiência na conexão entre voluntários e iniciativas. Essa análise teve como base pesquisas sobre plataformas similares e boas práticas de interação humano-computador (\textit{IHC}), garantindo que a solução proposta fosse intuitiva e eficaz.
+
+\textbf{Coleta de Dados:} Para embasar o desenvolvimento, foi aplicado um formulário online voltado a voluntários e organizadores de iniciativas sociais. O objetivo foi identificar os principais desafios enfrentados na organização do voluntariado e as expectativas em relação a uma plataforma digital. Os dados coletados orientaram a definição dos requisitos e das funcionalidades prioritárias do sistema.
+
+\textbf{Prototipagem Visual:} Com base na análise dos requisitos e nas respostas obtidas, foi desenvolvido um protótipo visual da plataforma. Esse protótipo representa a estrutura da interface e o fluxo de navegação do sistema, permitindo validar a experiência do usuário antes da implementação da solução final.
+
+\subsection{Ferramentas e Tecnologias}
+
+As ferramentas utilizadas nesta fase inicial do projeto foram:
+
+\begin{itemize} \item \textbf{Google Forms:} Utilizado para a coleta de dados, permitindo mapear necessidades e desafios enfrentados pelos usuários. \item \textbf{Figma ou Adobe XD:} Ferramentas empregadas na criação do protótipo visual, possibilitando simular a interface da plataforma e testar fluxos de navegação. \item \textbf{Técnicas de Análise de Requisitos:} Aplicadas para definir as funcionalidades essenciais da plataforma, garantindo que o projeto atenda às demandas reais do público-alvo. \end{itemize}
+
+Essa abordagem inicial possibilitou a definição clara do escopo do projeto, assegurando que as futuras implementações estejam alinhadas às necessidades dos usuários e proporcionando uma base sólida para o desenvolvimento da plataforma.
+
+
+
+\section{Resultados Esperados}
+
+Até o momento, o \textit{CommunityLink} alcançou importantes marcos no seu desenvolvimento, com a conclusão das etapas iniciais de levantamento de requisitos, coleta de dados e prototipagem visual. Essas etapas foram fundamentais para moldar a visão e os requisitos da plataforma, preparando o terreno para a futura implementação.
+
+Com o levantamento de requisitos, foi possível identificar as necessidades funcionais e não funcionais da plataforma, focando especialmente em aspectos como usabilidade, acessibilidade e eficiência na conexão entre voluntários e organizações. Este processo assegurou que a solução proposta será intuitiva e eficaz, alinhando as expectativas dos usuários e as melhores práticas de interação humano-computador.
+
+A coleta de dados, realizada por meio de um formulário online, permitiu mapear os desafios enfrentados por voluntários e organizadores de iniciativas sociais. Com isso, foi possível entender melhor as principais dificuldades e as expectativas em relação a uma plataforma digital, orientando a definição das funcionalidades essenciais que serão implementadas no futuro.
+
+A prototipagem visual da plataforma representou um avanço significativo, oferecendo uma simulação da interface e do fluxo de navegação do sistema. Esse protótipo foi essencial para validar a experiência do usuário e garantir que a interface proposta atendesse às necessidades e expectativas identificadas nas fases anteriores.
+
+Esses resultados iniciais são promissores, pois estabeleceram uma base sólida para a futura implementação da plataforma *CommunityLink*. A etapa de desenvolvimento está agora preparada para avançar com a construção do sistema, com um escopo bem definido e alinhado às demandas reais do público-alvo.
+
+
+\section{Conclusão}
+A transformação digital desempenha um papel crucial na modernização e otimização dos processos de voluntariado, oferecendo novas possibilidades para a gestão e engajamento de indivíduos em causas sociais e ambientais. No contexto dessa transformação, a plataforma *CommunityLink* surge como uma solução inovadora, com o objetivo de conectar de maneira eficiente voluntários e organizações. Utilizando tecnologias avançadas, a plataforma visa facilitar o gerenciamento das atividades voluntárias, proporcionando uma experiência intuitiva tanto para os voluntários quanto para as organizações. 
+
+Com o uso de ferramentas digitais, \textit{CommunityLink} busca otimizar a comunicação, a transparência e o acompanhamento das ações de voluntariado, garantindo que as iniciativas sejam mais eficazes e atinjam um impacto social mais significativo. Além disso, ao integrar recursos que promovem a acessibilidade e a usabilidade, a plataforma tem o potencial de ampliar o alcance das causas sociais, incentivando a participação ativa de um maior número de pessoas e consolidando a colaboração entre a sociedade civil e as organizações. Em síntese, o *CommunityLink* se propõe a ser uma ferramenta estratégica para potencializar o voluntariado, promovendo a inovação social e ampliando o impacto das ações comunitárias e ambientais.
+
+\bibliographystyle{sbc}
+\begin{thebibliography}{10}
+
+\bibitem{scielo_humanas_2021}
+SCIELO HUMANAS.
+\newblock Transformação Digital: a constante necessidade de adaptação.
+\newblock Blog SciELO Humanas, 22 dez. 2021. Disponível em: \url{https://humanas.blog.scielo.org/blog/2021/12/22/transformacao-digital-a-constante-necessidade-de-adaptacao/}.
+
+\bibitem{le_2022}
+LE, G. H.; AARTSEN, M.
+\newblock Understanding volunteering intensity in older volunteers.
+\newblock Ageing and Society, 12 out. 2022. Disponível em: \url{https://www.cambridge.org/core/journals/ageing-and-society/article/understanding-volunteering-intensity-in-older-volunteers/50C99109202240BDC04E15630026EFBD}. Acesso em: 20 dez. 2024.
+
+\bibitem{cambridge_2018}
+CAMBRIDGE UNIVERSITY PRESS.
+\newblock Equity and volunteers.
+\newblock Legal Studies, 2018. Disponível em: \url{https://www.cambridge.org/core/journals/legal-studies/article/abs/equity-and-volunteers/136AD3C6C6B31FE4C5B03E4499090DDA}.
+
+\bibitem{wiley_2020}
+WILEY ONLINE LIBRARY.
+\newblock Digital platform for social innovation: Insights from volunteering.
+\newblock Corporate Social Responsibility and Environmental Management, 2020. Disponível em: \url{https://onlinelibrary.wiley.com/doi/full/10.1111/caim.12499}.
+
+\bibitem{scielo_brasil_2020}
+SCIELO BRASIL.
+\newblock O Voluntariado em questão: a subjetividade permitida.
+\newblock Psicologia \& Sociedade, 2020. Disponível em: \url{https://doi.org/10.1590/S1414-98932008000300003}.
+
+\bibitem{ibict_2019}
+IBICT.
+\newblock Informação, voluntariado e redes digitais.
+\newblock Revista IBICT, 2019. Disponível em: \url{http://ridi.ibict.br/handle/123456789/717}.
+
+\bibitem{ecampos_2021}
+E-CAMPÓS.
+\newblock A projeção de interesses em redes sociais de voluntariado.
+\newblock E-CAMPÓS Journal, 2021. Disponível em: \url{https://e-compos.org.br/e-compos/article/view/162}.
+
+\bibitem{redalyc_2015}
+REDALYC.
+\newblock As motivações no trabalho voluntário.
+\newblock Revista Psicologia \& Ciência, 2015. Disponível em: \url{https://www.redalyc.org/pdf/3885/388539113005.pdf}.
+
+\bibitem{pepsic_2015}
+PEPSIC.
+\newblock Significado do trabalho voluntário empresarial.
+\newblock Psicologia: Teoria e Pesquisa, 2015. Disponível em: \url{https://pepsic.bvsalud.org/scielo.php?pid=S1984-66572015000200006&script=sci_arttext}.
+
+\bibitem{cambridge_volunteers_2020}
+CAMBRIDGE UNIVERSITY PRESS.
+\newblock Volunteers: An Essential Component.
+\newblock Prehospital and Disaster Medicine, 2020. Disponível em: \url{https://www.cambridge.org/core/journals/prehospital-and-disaster-medicine/article/volunteers-an-essential-component/8D0B3A75B36B385C66F9A5603E9961E7}.
+
+\bibitem{repositorio_uninter_2018}
+REPOSITORIO UNINTER.
+\newblock Gamificação da disciplina metodologia da pesquisa no ensino superior: estudo de caso.
+\newblock Google Acadêmico, 2018. Disponível em: \url{https://repositorio.uninter.com/handle/1/330}.
+
+\bibitem{atados_2023}
+ATADOS.
+\newblock Atados | Plataforma de Voluntariado | Encontre Trabalho Voluntário.
+\newblock Atados, 2023. Disponível em: \url{https://www.atados.com}.
+
+\bibitem{vvolunteer_2023}
+V-VOLUNTEER.
+\newblock Volunteer | A plataforma para quem quer ajudar.
+\newblock V-Volunteer, 2023. Disponível em: \url{https://www.vvolunteer.com.br/}.
+
+\bibitem{voluntarios_2023}
+VOLUNTÁRIOS.
+\newblock Campanha Seja um Voluntário.
+\newblock Voluntários, 2023. Disponível em: \url{https://voluntarios.com.br/}.
+
+\bibitem{idealist_2023}
+IDEALIST.
+\newblock Idealist: Plataforma Global de Conexão do Setor Social.
+\newblock Idealist, 2023. Disponível em: \url{https://www.idealist.org/pt}.
+
+\bibitem{liberopinion_2023}
+LIBEROPINION.
+\newblock Voluntariado - Liberopinion - Plataforma de Participação Pública.
+\newblock Liberopinion, 2023. Disponível em: \url{https://liberopinion.com/voluntariado}.
+
+\bibitem{transformabrasil_2023}
+TRANSFORMA BRASIL.
+\newblock Transforma Brasil.
+\newblock Transforma Brasil, 2023. Disponível em: \url{https://transformabrasil.com.br/}.
+
+\bibitem{worldpackers_2023}
+WORLD PACKERS.
+\newblock ONGs no Brasil: conheça projetos sociais e saiba como voluntariar.
+\newblock Worldpackers, 2023. Disponível em: \url{https://www.worldpackers.com/pt-BR/articles/ongs-no-brasil-voluntariado}.
+
+\bibitem{entrajuda_2023}
+ENTRAJUDA.
+\newblock Programas de Voluntariado da EntraAjuda.
+\newblock EntraAjuda, 2023. Disponível em: \url{https://www.entrajuda.pt/pages/introducao}.
+\end{thebibliography}
+
+\end{document}

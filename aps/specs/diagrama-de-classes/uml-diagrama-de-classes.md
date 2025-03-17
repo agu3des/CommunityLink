@@ -39,6 +39,7 @@ class UsuarioComum {
     + foto : Image
     - status : String
     - preferencias : String
+    - telefone: String
     + ativarAutenticacaoEmDoisFatores() -> void
     + reportarProblemas() -> void
     + acessarSistemaEmMultiplosIdiomas() -> void

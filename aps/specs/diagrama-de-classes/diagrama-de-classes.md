@@ -30,7 +30,7 @@
 
 ---
 ## Diagrama de Classes
-![Diagrama de Classes CommunityLink](/images/diagrama-de-classes-27fev2025.png)
+![Diagrama de Classes CommunityLink](/images/diagrama-de-classe-05Marco2025.png)
 
 **Figura 1** - Diagrama de Classes do CommunityLink
 
