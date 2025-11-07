@@ -1,0 +1,39 @@
+{% extends 'acoes/base.html' %}
+
+{% block title %}Minhas Inscrições - CommunityLink{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Minhas Inscrições</h1>
+
+    <div class="bg-white rounded-lg shadow-xl p-6">
+        {% if not inscricoes %}
+            <p class="text-gray-700">Você ainda não se inscreveu em nenhuma ação.</p>
+            <a href="{% url 'acao_list' %}" class="mt-4 inline-block text-green-600 hover:text-green-800 font-semibold">
+                Ver ações disponíveis &rarr;
+            </a>
+        {% endif %}
+        
+        <ul class="space-y-4">
+            {% for inscricao in inscricoes %}
+                <li class="flex flex-wrap justify-between items-center p-4 border rounded-md hover:bg-gray-50">
+                    <div>
+                        <a href="{{ inscricao.acao.get_absolute_url }}" class="text-xl font-bold text-green-700 hover:underline">
+                            {{ inscricao.acao.titulo }}
+                        </a>
+                        <p class="text-gray-600">
+                            Data da Ação: {{ inscricao.acao.data|date:"d/m/Y H:i" }}
+                        </p>
+                    </div>
+                    <div class="mt-2 md:mt-0">
+                        <span class="font-semibold py-1 px-3 rounded-full
+                            {% if inscricao.status == 'ACEITO' %} bg-green-100 text-green-800
+                            {% elif inscricao.status == 'PENDENTE' %} bg-yellow-100 text-yellow-800
+                            {% else %} bg-red-100 text-red-800 {% endif %}">
+                            Status: {{ inscricao.get_status_display }}
+                        </span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

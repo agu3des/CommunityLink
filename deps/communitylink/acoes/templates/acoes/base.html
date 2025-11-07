@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Carrega o Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}CommunityLink{% endblock %}</title>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-7">
+                    <div>
+                        <!-- Logo -->
+                        <a href="{% url 'acao_list' %}" class="flex items-center py-4 px-2">
+                            <span class="font-semibold text-gray-700 text-lg">CommunityLink</span>
+                        </a>
+                    </div>
+                    <!-- Links da Nav Esquerda -->
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="{% url 'acao_list' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Ações</a>
+                        
+                        {% if user.is_authenticated %}
+                            <!-- Link de Criar Ação (agora protegido pela view) -->
+                            <a href="{% url 'acao_create' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Criar Ação</a>
+                            
+                            <!-- MUDANÇA AQUI: Novo Link -->
+                            <a href="{% url 'minhas_inscricoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Inscrições</a>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <!-- Links da Nav Direita -->
+                <div class="hidden md:flex items-center space-x-3">
+                    {% if user.is_authenticated %}
+                        <span class="py-2 px-2 text-gray-600">Olá, {{ user.username }}</span>
+                        <a href="/admin/logout/" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-400 transition duration-300">Sair</a>
+                    {% else %}
+                        <a href="/admin/login/?next={{ request.path }}" class="py-2 px-2 font-medium text-gray-700 rounded hover:bg-gray-200 transition duration-300">Entrar</a>
+                        <!-- Você precisará de uma view de registro depois -->
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo da Página -->
+    <main class="max-w-6xl mx-auto p-6">
+        <!-- Bloco para Mensagens (opcional, mas bom) -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="p-4 rounded-md 
+                        {% if message.tags == 'success' %} bg-green-100 text-green-800
+                        {% elif message.tags == 'error' %} bg-red-100 text-red-800
+                        {% else %} bg-blue-100 text-blue-800 {% endif %}"
+                        role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- O conteúdo de cada página será inserido aqui -->
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

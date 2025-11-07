@@ -1,0 +1,79 @@
+{% extends 'acoes/base.html' %}
+
+{% block title %}{{ acao.titulo }} - CommunityLink{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-xl p-8 max-w-4xl mx-auto">
+    
+    <!-- Título e Categoria -->
+    <span class="text-base font-semibold text-green-600 bg-green-100 py-2 px-4 rounded-full">{{ acao.get_categoria_display }}</span>
+    <h1 class="text-4xl font-bold text-gray-900 mt-4 mb-4">{{ acao.titulo }}</h1>
+
+    <!-- Informações Principais -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 mb-6">
+        <p class="text-gray-700 text-lg"><strong>Data:</strong> {{ acao.data|date:"d/m/Y \à\s H:i" }}</p>
+        <p class="text-gray-700 text-lg"><strong>Local:</strong> {{ acao.local }}</p>
+        <p class="text-gray-700 text-lg"><strong>Organizador:</strong> {{ acao.organizador.username }}</p>
+        <div class="text-lg">
+            <strong>Vagas Preenchidas:</strong>
+            <span class="font-semibold {% if acao.esta_cheia %} text-red-600 {% else %} text-blue-600 {% endif %}">
+                {{ acao.vagas_preenchidas }} / {{ acao.numero_vagas }}
+                {% if acao.esta_cheia %} (Esgotado) {% else %} (Há vagas) {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- Descrição -->
+    <div class="prose max-w-none text-gray-800 mb-8">
+        <h2 class="text-2xl font-semibold mb-2">Descrição da Ação</h2>
+        <p>{{ acao.descricao|linebreaks }}</p>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="border-t pt-6 flex flex-wrap gap-4 items-center">
+        
+        {% if user.is_authenticated %}
+            <!-- Se o usuário for o Organizador -->
+            {% if is_organizador %}
+                <a href="{% url 'acao_update' acao.pk %}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-300">
+                    Editar Ação
+                </a>
+                <a href="{% url 'acao_delete' acao.pk %}" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition duration-300">
+                    Deletar Ação
+                </a>
+                <a href="{% url 'acao_manage' acao.pk %}" class="px-6 py-3 bg-gray-700 hover:bg-gray-800 text-white font-semibold rounded-lg shadow-md transition duration-300">
+                    Gerenciar Inscrições
+                </a>
+            
+            <!-- Se for um Voluntário -->
+            {% else %}
+                {% if ja_inscrito %}
+                    <span class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg cursor-not-allowed">
+                        Solicitação Enviada (Status: {{ inscricao_status }})
+                    </span>
+                {% elif acao.esta_cheia %}
+                    <span class="px-6 py-3 bg-red-200 text-red-800 font-semibold rounded-lg cursor-not-allowed">
+                        Vagas Esgotadas
+                    </span>
+                {% else %}
+                    <!-- Formulário de Inscrição (é um POST) -->
+                    <form action="{% url 'acao_apply' acao.pk %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-300">
+                            Quero me Voluntariar!
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+            
+        {% else %}
+            <!-- Se não estiver logado -->
+            <a href="/admin/login/?next={{ request.path }}" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition duration-300">
+                Faça login para se voluntariar
+            </a>
+        {% endif %}
+        
+    </div>
+
+</div>
+{% endblock %}
