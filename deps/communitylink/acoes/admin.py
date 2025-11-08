@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Acao, Inscricao
+from .models import Acao, Inscricao, Notificacao
 
 # Classe para mostrar Inscrições "inline" (dentro da página da Ação)
 class InscricaoInline(admin.TabularInline):
@@ -18,3 +18,9 @@ class InscricaoAdmin(admin.ModelAdmin):
     list_display = ('acao', 'voluntario', 'status', 'data_inscricao')
     list_filter = ('status', 'acao')
     search_fields = ('voluntario__username', 'acao__titulo')
+
+# Registra Notificacao
+@admin.register(Notificacao)
+class NotificacaoAdmin(admin.ModelAdmin):
+    list_display = ('destinatario', 'mensagem', 'lida', 'created_at')
+    list_filter = ('lida', 'created_at')

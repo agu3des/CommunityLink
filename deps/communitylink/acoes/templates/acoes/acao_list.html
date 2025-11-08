@@ -1,9 +1,12 @@
 {% extends 'acoes/base.html' %}
 
-{% block title %}Todas as Ações - CommunityLink{% endblock %}
+{% block title %}Ações - CommunityLink{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Próximas Ações</h1>
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Ações Comunitárias</h1>
+
+    <!-- Inclui o formulário de filtro -->
+    {% include 'acoes/_filter_form.html' %}
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for acao in acoes %}

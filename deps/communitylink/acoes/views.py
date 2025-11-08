@@ -2,16 +2,63 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from .models import Acao, Inscricao
+from .models import Acao, Inscricao, Notificacao
 from .forms import AcaoForm
+from django.db.models import Q # Importante para filtros complexos
+import datetime # Importante para o filtro de data
+from django.urls import reverse # Para criar links nas notificações
+from django.utils import timezone # para a lista de acoes gerais ser mostrada de hoje em diante
+
+# --- Lógica de Filtro Reutilizável ---
+# (Vamos colocar a lógica de filtro aqui para não repetir)
+def filtrar_acoes_queryset(request, queryset):
+    """ Aplica filtros de GET a um queryset de Ações ou Inscrições. """
+    
+    # Pega os valores da URL (do formulário GET)
+    categoria_filter = request.GET.get('categoria')
+    local_filter = request.GET.get('local')
+    data_inicio_filter = request.GET.get('data_inicio')
+
+    # Define o prefixo de busca (para o modelo Inscricao)
+    # Se o queryset for de Inscrição, precisamos filtrar por 'acao__categoria'
+    prefix = 'acao__' if queryset.model == Inscricao else ''
+
+    if categoria_filter:
+        queryset = queryset.filter(**{f'{prefix}categoria': categoria_filter})
+    
+    if local_filter:
+        queryset = queryset.filter(**{f'{prefix}local__icontains': local_filter})
+        
+    if data_inicio_filter:
+        try:
+            # Converte a data do filtro
+            data_filtro = datetime.datetime.strptime(data_inicio_filter, '%Y-%m-%d').date()
+            # Filtra por 'data__gte' (maior ou igual)
+            queryset = queryset.filter(**{f'{prefix}data__gte': data_filtro})
+        except ValueError:
+            pass # Ignora data inválida
+
+    return queryset
 
 # --- CRUD Views ---
 
 # READ (List)
 def acao_list(request):
     """ Mostra a lista de todas as ações. """
-    acoes = Acao.objects.all().order_by('-data') # Mais recentes primeiro
-    context = {'acoes': acoes}
+    # filtra apenas ações de hoje em diante.
+    acoes_list = Acao.objects.filter(data__gte=timezone.now())
+
+    # --- Aplica os filtros do formulário (categoria, local, etc.) ---
+    acoes_list = filtrar_acoes_queryset(request, acoes_list)
+    
+    # Ordena DEPOIS de filtrar
+    acoes_list = acoes_list.order_by('data')
+
+    context = {
+        'acoes': acoes_list,
+        'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções de categoria
+        'filter_values': request.GET # Passa os valores do filtro (para preencher o form)
+    }
     return render(request, 'acoes/acao_list.html', context)
 
 # READ (Detail)
@@ -42,23 +89,32 @@ def acao_detail(request, pk):
 @login_required # Exige que o usuário esteja logado
 def acao_create(request):
     """ Cria uma nova ação. """
-
-    # --- MUDANÇA AQUI ---
-    # Verifica se o usuário logado NÃO está no grupo 'Organizadores'
-    if not request.user.groups.filter(name='Organizadores').exists():
+    
+    # Verifica se o usuário NÃO é organizador E TAMBÉM NÃO é superuser
+    is_organizador = request.user.groups.filter(name='Organizadores').exists()
+    if not is_organizador and not request.user.is_superuser:
         messages.error(request, 'Apenas organizadores podem criar ações.')
         return redirect('acao_list')
-    # --- FIM DA MUDANÇA ---
-
+    
     if request.method == 'POST':
         form = AcaoForm(request.POST)
         if form.is_valid():
-            # Não salva no banco ainda, precisamos adicionar o organizador
-            acao = form.save(commit=False) 
-            acao.organizador = request.user # Define o organizador como o usuário logado
-            acao.save()
-            messages.success(request, 'Ação criada com sucesso!')
-            return redirect(acao.get_absolute_url()) # Redireciona para os detalhes da ação
+
+            # --- Validação da Data ---
+            data_da_acao = form.cleaned_data.get('data')
+            
+            # Verifica se a data foi preenchida e se é no passado
+            if data_da_acao and data_da_acao < timezone.now():
+                # Adiciona um erro ao campo 'data' do formulário
+                form.add_error('data', 'A data da ação não pode ser no passado.')
+                messages.error(request, 'Por favor, corrija o erro no formulário.')
+            else:
+                # Se a data for válida, salva a ação
+                acao = form.save(commit=False) 
+                acao.organizador = request.user 
+                acao.save()
+                messages.success(request, 'Ação criada com sucesso!')
+                return redirect(acao.get_absolute_url())
     else:
         form = AcaoForm()
         
@@ -72,7 +128,8 @@ def acao_update(request, pk):
     acao = get_object_or_404(Acao, pk=pk)
 
     # Verifica se o usuário logado é o organizador
-    if acao.organizador != request.user:
+    # Superusuários também devem poder editar
+    if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para editar esta ação.')
         return redirect(acao.get_absolute_url())
 
@@ -94,7 +151,8 @@ def acao_delete(request, pk):
     """ Deleta uma ação. """
     acao = get_object_or_404(Acao, pk=pk)
     
-    if acao.organizador != request.user:
+    # Superusuários também devem poder deletar
+    if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para deletar esta ação.')
         return redirect(acao.get_absolute_url())
 
@@ -135,6 +193,13 @@ def acao_apply(request, pk):
 
     if created:
         messages.success(request, 'Sua solicitação foi enviada! O organizador irá analisá-la.')
+
+        # --- Criar Notificação para o Organizador ---
+        Notificacao.objects.create(
+            destinatario=acao.organizador,
+            mensagem=f"{request.user.username} solicitou participação em '{acao.titulo}'.",
+            link=reverse('acao_manage', args=[acao.pk]) # Link para a página de gerenciamento
+        )
     else:
         messages.info(request, f'Você já tem uma solicitação ({inscricao.get_status_display()}) para esta ação.')
 
@@ -146,7 +211,8 @@ def acao_manage(request, pk):
     """ Página para o organizador gerenciar as solicitações. """
     acao = get_object_or_404(Acao, pk=pk)
 
-    if acao.organizador != request.user:
+    # Superusuários também devem poder gerenciar
+    if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para gerenciar esta ação.')
         return redirect(acao.get_absolute_url())
         
@@ -169,6 +235,14 @@ def acao_manage(request, pk):
                 inscricao.status = novo_status
                 inscricao.save()
                 messages.success(request, f'Solicitação de {inscricao.voluntario.username} foi atualizada.')
+
+                # --- Criar Notificação para o Voluntário ---
+                status_display = "Aceita" if novo_status == 'ACEITO' else "Rejeitada"
+                Notificacao.objects.create(
+                    destinatario=inscricao.voluntario,
+                    mensagem=f"Sua inscrição para '{acao.titulo}' foi {status_display}.",
+                    link=reverse('acao_detail', args=[acao.pk]) # Link para a página da ação
+                )
                 
         except Inscricao.DoesNotExist:
             messages.error(request, 'Solicitação não encontrada.')
@@ -196,9 +270,74 @@ def minhas_inscricoes(request):
     """ Mostra todas as ações nas quais o usuário logado se inscreveu. """
     
     # Filtra as inscrições pelo usuário logado
-    inscricoes = Inscricao.objects.filter(voluntario=request.user).order_by('acao__data')
+    inscricoes_list = Inscricao.objects.filter(voluntario=request.user)
+
+    inscricoes_list = filtrar_acoes_queryset(request, inscricoes_list)
+    
+    inscricoes_list = inscricoes_list.order_by('acao__data')
     
     context = {
-        'inscricoes': inscricoes
+        'inscricoes': inscricoes_list,
+        'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções
+        'filter_values': request.GET # Passa os valores
     }
     return render(request, 'acoes/minhas_inscricoes.html', context)
+
+# --- NOVA VIEW PARA ORGANIZADORES ---
+
+@login_required
+def minhas_acoes(request):
+    """ Mostra todas as ações criadas pelo usuário logado (organizador). """
+    
+    # Filtra as ações pelo organizador (usuário logado)
+    acoes_list = Acao.objects.filter(organizador=request.user)
+
+    acoes_list = filtrar_acoes_queryset(request, acoes_list)
+        
+    acoes_list = acoes_list.order_by('-data')
+    
+    context = {
+        'acoes': acoes_list,
+        'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções
+        'filter_values': request.GET # Passa os valores
+    }
+    return render(request, 'acoes/minhas_acoes.html', context)
+
+# --- VIEW PARA NOTIFICACOES ---
+
+@login_required
+def notificacoes_list(request):
+    """ Mostra a lista de notificações do usuário e marca como lidas. """
+    
+    # Pega todas as notificações do usuário logado
+    notificacoes = Notificacao.objects.filter(destinatario=request.user)
+    
+    # Pega as não lidas para atualizar
+    nao_lidas = notificacoes.filter(lida=False)
+
+    # Pega o número de lidas para o botão
+    lidas_count = notificacoes.filter(lida=True).count()
+    
+    # Marca todas como lidas (ao visitar a página)
+    nao_lidas.update(lida=True)
+    
+    context = {
+        'notificacoes': notificacoes,
+        'lidas_count': lidas_count # Passa a contagem para o template
+    }
+    return render(request, 'acoes/notificacoes_list.html', context)
+
+@login_required
+def notificacoes_clear(request):
+    """ Deleta todas as notificações LIDAS do usuário. """
+    
+    # Só aceita POST para segurança
+    if request.method != 'POST':
+        return redirect('notificacoes_list')
+
+    # Deleta apenas as notificações que já foram lidas
+    Notificacao.objects.filter(destinatario=request.user, lida=True).delete()
+    
+    messages.success(request, 'Notificações lidas foram apagadas.')
+    
+    return redirect('notificacoes_list')

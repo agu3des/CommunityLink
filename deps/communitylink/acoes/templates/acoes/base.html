@@ -24,9 +24,13 @@
                         <a href="{% url 'acao_list' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Ações</a>
                         
                         {% if user.is_authenticated %}
-                            <!-- Link de Criar Ação (agora protegido pela view) -->
+                            <!-- Link de Criar Ação -->
+                            <!-- Links SÓ para Organizadores OU Superusuários -->
+                            {% if is_organizador or user.is_superuser %}
                             <a href="{% url 'acao_create' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Criar Ação</a>
-                            
+                            <a href="{% url 'minhas_acoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Ações</a>
+                            {% endif %}
+
                             <!-- MUDANÇA AQUI: Novo Link -->
                             <a href="{% url 'minhas_inscricoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Inscrições</a>
                         {% endif %}
@@ -36,6 +40,21 @@
                 <!-- Links da Nav Direita -->
                 <div class="hidden md:flex items-center space-x-3">
                     {% if user.is_authenticated %}
+
+                        <!-- --- Link de Notificações --- -->
+                        <a href="{% url 'notificacoes_list' %}" class="relative p-2 text-gray-600 hover:text-gray-800">
+                            <!-- Ícone de Sino (SVG) -->
+                            <svg classxmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341A6.002 6.002 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            <!-- Contador de Notificações -->
+                            {% if unread_notification_count > 0 %}
+                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                {{ unread_notification_count }}
+                            </span>
+                            {% endif %}
+                        </a>
+
                         <span class="py-2 px-2 text-gray-600">Olá, {{ user.username }}</span>
                         <a href="/admin/logout/" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-400 transition duration-300">Sair</a>
                     {% else %}

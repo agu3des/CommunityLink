@@ -18,5 +18,12 @@ urlpatterns = [
     # Inscrição
     path('<int:pk>/inscrever/', views.acao_apply, name='acao_apply'),
     path('<int:pk>/gerenciar/', views.acao_manage, name='acao_manage'),
+
+    #Páginas de usuário
     path('minhas-inscricoes/', views.minhas_inscricoes, name='minhas_inscricoes'),
+    path('minhas-acoes/', views.minhas_acoes, name='minhas_acoes'),
+
+    # Notificações
+    path('notificacoes/', views.notificacoes_list, name='notificacoes_list'),
+    path('notificacoes/limpar/', views.notificacoes_clear, name='notificacoes_clear'),
 ]
