@@ -4,14 +4,58 @@ from django.http import HttpResponseForbidden
 from django.contrib import messages
 from .models import Acao, Inscricao
 from .forms import AcaoForm
+from django.db.models import Q # Importante para filtros complexos
+import datetime # Importante para o filtro de data
+
+# --- Lógica de Filtro Reutilizável ---
+# (Vamos colocar a lógica de filtro aqui para não repetir)
+def filtrar_acoes_queryset(request, queryset):
+    """ Aplica filtros de GET a um queryset de Ações ou Inscrições. """
+    
+    # Pega os valores da URL (do formulário GET)
+    categoria_filter = request.GET.get('categoria')
+    local_filter = request.GET.get('local')
+    data_inicio_filter = request.GET.get('data_inicio')
+
+    # Define o prefixo de busca (para o modelo Inscricao)
+    # Se o queryset for de Inscrição, precisamos filtrar por 'acao__categoria'
+    prefix = 'acao__' if queryset.model == Inscricao else ''
+
+    if categoria_filter:
+        queryset = queryset.filter(**{f'{prefix}categoria': categoria_filter})
+    
+    if local_filter:
+        queryset = queryset.filter(**{f'{prefix}local__icontains': local_filter})
+        
+    if data_inicio_filter:
+        try:
+            # Converte a data do filtro
+            data_filtro = datetime.datetime.strptime(data_inicio_filter, '%Y-%m-%d').date()
+            # Filtra por 'data__gte' (maior ou igual)
+            queryset = queryset.filter(**{f'{prefix}data__gte': data_filtro})
+        except ValueError:
+            pass # Ignora data inválida
+
+    return queryset
 
 # --- CRUD Views ---
 
 # READ (List)
 def acao_list(request):
     """ Mostra a lista de todas as ações. """
-    acoes = Acao.objects.all().order_by('-data') # Mais recentes primeiro
-    context = {'acoes': acoes}
+    acoes_list = Acao.objects.all() # Começa com todas as ações
+
+    # --- MUDANÇA: Aplica o filtro ---
+    acoes_list = filtrar_acoes_queryset(request, acoes_list)
+    
+    # Ordena DEPOIS de filtrar
+    acoes_list = acoes_list.order_by('-data')
+
+    context = {
+        'acoes': acoes_list,
+        'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções de categoria
+        'filter_values': request.GET # Passa os valores do filtro (para preencher o form)
+    }
     return render(request, 'acoes/acao_list.html', context)
 
 # READ (Detail)
@@ -42,14 +86,13 @@ def acao_detail(request, pk):
 @login_required # Exige que o usuário esteja logado
 def acao_create(request):
     """ Cria uma nova ação. """
-
-    # --- MUDANÇA AQUI ---
-    # Verifica se o usuário logado NÃO está no grupo 'Organizadores'
-    if not request.user.groups.filter(name='Organizadores').exists():
+    
+    # Verifica se o usuário NÃO é organizador E TAMBÉM NÃO é superuser
+    is_organizador = request.user.groups.filter(name='Organizadores').exists()
+    if not is_organizador and not request.user.is_superuser:
         messages.error(request, 'Apenas organizadores podem criar ações.')
         return redirect('acao_list')
-    # --- FIM DA MUDANÇA ---
-
+    
     if request.method == 'POST':
         form = AcaoForm(request.POST)
         if form.is_valid():
@@ -72,7 +115,8 @@ def acao_update(request, pk):
     acao = get_object_or_404(Acao, pk=pk)
 
     # Verifica se o usuário logado é o organizador
-    if acao.organizador != request.user:
+    # Superusuários também devem poder editar
+    if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para editar esta ação.')
         return redirect(acao.get_absolute_url())
 
@@ -94,7 +138,8 @@ def acao_delete(request, pk):
     """ Deleta uma ação. """
     acao = get_object_or_404(Acao, pk=pk)
     
-    if acao.organizador != request.user:
+    # Superusuários também devem poder deletar
+    if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para deletar esta ação.')
         return redirect(acao.get_absolute_url())
 
@@ -146,7 +191,8 @@ def acao_manage(request, pk):
     """ Página para o organizador gerenciar as solicitações. """
     acao = get_object_or_404(Acao, pk=pk)
 
-    if acao.organizador != request.user:
+    # Superusuários também devem poder gerenciar
+    if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para gerenciar esta ação.')
         return redirect(acao.get_absolute_url())
         
@@ -196,9 +242,35 @@ def minhas_inscricoes(request):
     """ Mostra todas as ações nas quais o usuário logado se inscreveu. """
     
     # Filtra as inscrições pelo usuário logado
-    inscricoes = Inscricao.objects.filter(voluntario=request.user).order_by('acao__data')
+    inscricoes_list = Inscricao.objects.filter(voluntario=request.user)
+
+    inscricoes_list = filtrar_acoes_queryset(request, inscricoes_list)
+    
+    inscricoes_list = inscricoes_list.order_by('acao__data')
     
     context = {
-        'inscricoes': inscricoes
+        'inscricoes': inscricoes_list,
+        'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções
+        'filter_values': request.GET # Passa os valores
     }
     return render(request, 'acoes/minhas_inscricoes.html', context)
+
+# --- NOVA VIEW PARA ORGANIZADORES ---
+
+@login_required
+def minhas_acoes(request):
+    """ Mostra todas as ações criadas pelo usuário logado (organizador). """
+    
+    # Filtra as ações pelo organizador (usuário logado)
+    acoes_list = Acao.objects.filter(organizador=request.user)
+
+    acoes_list = filtrar_acoes_queryset(request, acoes_list)
+        
+    acoes_list = acoes_list.order_by('-data')
+    
+    context = {
+        'acoes': acoes_list,
+        'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções
+        'filter_values': request.GET # Passa os valores
+    }
+    return render(request, 'acoes/minhas_acoes.html', context)

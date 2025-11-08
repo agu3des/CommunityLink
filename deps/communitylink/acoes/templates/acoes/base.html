@@ -24,9 +24,13 @@
                         <a href="{% url 'acao_list' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Ações</a>
                         
                         {% if user.is_authenticated %}
-                            <!-- Link de Criar Ação (agora protegido pela view) -->
+                            <!-- Link de Criar Ação -->
+                            <!-- Links SÓ para Organizadores OU Superusuários -->
+                            {% if is_organizador or user.is_superuser %}
                             <a href="{% url 'acao_create' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Criar Ação</a>
-                            
+                            <a href="{% url 'minhas_acoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Ações</a>
+                            {% endif %}
+
                             <!-- MUDANÇA AQUI: Novo Link -->
                             <a href="{% url 'minhas_inscricoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Inscrições</a>
                         {% endif %}

@@ -19,4 +19,5 @@ urlpatterns = [
     path('<int:pk>/inscrever/', views.acao_apply, name='acao_apply'),
     path('<int:pk>/gerenciar/', views.acao_manage, name='acao_manage'),
     path('minhas-inscricoes/', views.minhas_inscricoes, name='minhas_inscricoes'),
+    path('minhas-acoes/', views.minhas_acoes, name='minhas_acoes'),
 ]
