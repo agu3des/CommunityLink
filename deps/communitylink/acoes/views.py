@@ -7,6 +7,7 @@ from .forms import AcaoForm
 from django.db.models import Q # Importante para filtros complexos
 import datetime # Importante para o filtro de data
 from django.urls import reverse # Para criar links nas notificações
+from django.utils import timezone # para a lista de acoes gerais ser mostrada de hoje em diante
 
 # --- Lógica de Filtro Reutilizável ---
 # (Vamos colocar a lógica de filtro aqui para não repetir)
@@ -44,13 +45,14 @@ def filtrar_acoes_queryset(request, queryset):
 # READ (List)
 def acao_list(request):
     """ Mostra a lista de todas as ações. """
-    acoes_list = Acao.objects.all() # Começa com todas as ações
+    # filtra apenas ações de hoje em diante.
+    acoes_list = Acao.objects.filter(data__gte=timezone.now())
 
-    # --- MUDANÇA: Aplica o filtro ---
+    # --- Aplica os filtros do formulário (categoria, local, etc.) ---
     acoes_list = filtrar_acoes_queryset(request, acoes_list)
     
     # Ordena DEPOIS de filtrar
-    acoes_list = acoes_list.order_by('-data')
+    acoes_list = acoes_list.order_by('data')
 
     context = {
         'acoes': acoes_list,
