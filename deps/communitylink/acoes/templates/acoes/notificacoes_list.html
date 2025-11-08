@@ -3,7 +3,21 @@
 {% block title %}Minhas Notificações{% endblock %}
 
 {% block content %}
-<h1 class="text-3xl font-bold text-gray-800 mb-6">Minhas Notificações</h1>
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Minhas Notificações</h1>
+    
+    <!-- MUDANÇA: Botão de Limpar -->
+    {% if lidas_count > 0 %}
+        <form method="POST" action="{% url 'notificacoes_clear' %}">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 text-sm">
+                Limpar Lidas ({{ lidas_count }})
+            </button>
+        </form>
+    {% endif %}
+    <!-- FIM DA MUDANÇA -->
+    
+</div>
 
 <div class="bg-white rounded-lg shadow-xl p-6">
     {% if not notificacoes %}
@@ -12,10 +26,10 @@
         <ul class="divide-y divide-gray-200">
             {% for notificacao in notificacoes %}
                 <li class="py-4">
-                    <!-- Se a notificação tiver um link, torna a mensagem clicável -->
                     {% if notificacao.link %}
                         <a href="{{ notificacao.link }}" class="block hover:bg-gray-50 p-2 rounded-md">
-                            <p class="text-gray-800 {{ notificacao.lida|yesno:',font-bold' }}">
+                            <!-- Mensagem: Fica normal se lida, negrito se não lida -->
+                            <p class="text-gray-800 {% if not notificacao.lida %}font-bold{% endif %}">
                                 {{ notificacao.mensagem }}
                             </p>
                             <span class="text-sm text-gray-500">
@@ -24,7 +38,7 @@
                         </a>
                     {% else %}
                         <div class="p-2">
-                            <p class="text-gray-800 {{ notificacao.lida|yesno:',font-bold' }}">
+                            <p class="text-gray-800 {% if not notificacao.lida %}font-bold{% endif %}">
                                 {{ notificacao.mensagem }}
                             </p>
                             <span class="text-sm text-gray-500">

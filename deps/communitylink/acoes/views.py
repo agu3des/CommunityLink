@@ -302,11 +302,30 @@ def notificacoes_list(request):
     
     # Pega as não lidas para atualizar
     nao_lidas = notificacoes.filter(lida=False)
+
+    # Pega o número de lidas para o botão
+    lidas_count = notificacoes.filter(lida=True).count()
     
     # Marca todas como lidas (ao visitar a página)
     nao_lidas.update(lida=True)
     
     context = {
-        'notificacoes': notificacoes
+        'notificacoes': notificacoes,
+        'lidas_count': lidas_count # Passa a contagem para o template
     }
     return render(request, 'acoes/notificacoes_list.html', context)
+
+@login_required
+def notificacoes_clear(request):
+    """ Deleta todas as notificações LIDAS do usuário. """
+    
+    # Só aceita POST para segurança
+    if request.method != 'POST':
+        return redirect('notificacoes_list')
+
+    # Deleta apenas as notificações que já foram lidas
+    Notificacao.objects.filter(destinatario=request.user, lida=True).delete()
+    
+    messages.success(request, 'Notificações lidas foram apagadas.')
+    
+    return redirect('notificacoes_list')

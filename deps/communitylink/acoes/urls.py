@@ -25,4 +25,5 @@ urlpatterns = [
 
     # Notificações
     path('notificacoes/', views.notificacoes_list, name='notificacoes_list'),
+    path('notificacoes/limpar/', views.notificacoes_clear, name='notificacoes_clear'),
 ]
