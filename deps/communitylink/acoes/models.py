@@ -83,3 +83,19 @@ class Inscricao(models.Model):
 
     def __str__(self):
         return f'{self.voluntario.username} em {self.acao.titulo} ({self.status})'
+
+
+class Notificacao(models.Model):
+    """ Modelo para notificações no sistema. """
+    destinatario = models.ForeignKey(User, on_delete=models.CASCADE)
+    mensagem = models.CharField(max_length=255)
+    lida = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # Link para onde a notificação deve levar ao ser clicada
+    link = models.URLField(blank=True, null=True) 
+
+    class Meta:
+        ordering = ['-created_at'] # Mais recentes primeiro
+
+    def __str__(self):
+        return f"Notificação para {self.destinatario.username}: {self.mensagem[:30]}..."

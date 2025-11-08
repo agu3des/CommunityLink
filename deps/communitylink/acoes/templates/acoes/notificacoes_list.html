@@ -1,0 +1,40 @@
+{% extends 'acoes/base.html' %}
+
+{% block title %}Minhas Notificações{% endblock %}
+
+{% block content %}
+<h1 class="text-3xl font-bold text-gray-800 mb-6">Minhas Notificações</h1>
+
+<div class="bg-white rounded-lg shadow-xl p-6">
+    {% if not notificacoes %}
+        <p class="text-gray-700">Você não tem nenhuma notificação.</p>
+    {% else %}
+        <ul class="divide-y divide-gray-200">
+            {% for notificacao in notificacoes %}
+                <li class="py-4">
+                    <!-- Se a notificação tiver um link, torna a mensagem clicável -->
+                    {% if notificacao.link %}
+                        <a href="{{ notificacao.link }}" class="block hover:bg-gray-50 p-2 rounded-md">
+                            <p class="text-gray-800 {{ notificacao.lida|yesno:',font-bold' }}">
+                                {{ notificacao.mensagem }}
+                            </p>
+                            <span class="text-sm text-gray-500">
+                                {{ notificacao.created_at|timesince }} atrás
+                            </span>
+                        </a>
+                    {% else %}
+                        <div class="p-2">
+                            <p class="text-gray-800 {{ notificacao.lida|yesno:',font-bold' }}">
+                                {{ notificacao.mensagem }}
+                            </p>
+                            <span class="text-sm text-gray-500">
+                                {{ notificacao.created_at|timesince }} atrás
+                            </span>
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
+{% endblock %}

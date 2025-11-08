@@ -2,10 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from .models import Acao, Inscricao
+from .models import Acao, Inscricao, Notificacao
 from .forms import AcaoForm
 from django.db.models import Q # Importante para filtros complexos
 import datetime # Importante para o filtro de data
+from django.urls import reverse # Para criar links nas notificações
 
 # --- Lógica de Filtro Reutilizável ---
 # (Vamos colocar a lógica de filtro aqui para não repetir)
@@ -180,6 +181,13 @@ def acao_apply(request, pk):
 
     if created:
         messages.success(request, 'Sua solicitação foi enviada! O organizador irá analisá-la.')
+
+        # --- Criar Notificação para o Organizador ---
+        Notificacao.objects.create(
+            destinatario=acao.organizador,
+            mensagem=f"{request.user.username} solicitou participação em '{acao.titulo}'.",
+            link=reverse('acao_manage', args=[acao.pk]) # Link para a página de gerenciamento
+        )
     else:
         messages.info(request, f'Você já tem uma solicitação ({inscricao.get_status_display()}) para esta ação.')
 
@@ -215,6 +223,14 @@ def acao_manage(request, pk):
                 inscricao.status = novo_status
                 inscricao.save()
                 messages.success(request, f'Solicitação de {inscricao.voluntario.username} foi atualizada.')
+
+                # --- Criar Notificação para o Voluntário ---
+                status_display = "Aceita" if novo_status == 'ACEITO' else "Rejeitada"
+                Notificacao.objects.create(
+                    destinatario=inscricao.voluntario,
+                    mensagem=f"Sua inscrição para '{acao.titulo}' foi {status_display}.",
+                    link=reverse('acao_detail', args=[acao.pk]) # Link para a página da ação
+                )
                 
         except Inscricao.DoesNotExist:
             messages.error(request, 'Solicitação não encontrada.')
@@ -274,3 +290,23 @@ def minhas_acoes(request):
         'filter_values': request.GET # Passa os valores
     }
     return render(request, 'acoes/minhas_acoes.html', context)
+
+# --- VIEW PARA NOTIFICACOES ---
+
+@login_required
+def notificacoes_list(request):
+    """ Mostra a lista de notificações do usuário e marca como lidas. """
+    
+    # Pega todas as notificações do usuário logado
+    notificacoes = Notificacao.objects.filter(destinatario=request.user)
+    
+    # Pega as não lidas para atualizar
+    nao_lidas = notificacoes.filter(lida=False)
+    
+    # Marca todas como lidas (ao visitar a página)
+    nao_lidas.update(lida=True)
+    
+    context = {
+        'notificacoes': notificacoes
+    }
+    return render(request, 'acoes/notificacoes_list.html', context)
