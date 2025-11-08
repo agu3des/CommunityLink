@@ -99,12 +99,22 @@ def acao_create(request):
     if request.method == 'POST':
         form = AcaoForm(request.POST)
         if form.is_valid():
-            # Não salva no banco ainda, precisamos adicionar o organizador
-            acao = form.save(commit=False) 
-            acao.organizador = request.user # Define o organizador como o usuário logado
-            acao.save()
-            messages.success(request, 'Ação criada com sucesso!')
-            return redirect(acao.get_absolute_url()) # Redireciona para os detalhes da ação
+
+            # --- Validação da Data ---
+            data_da_acao = form.cleaned_data.get('data')
+            
+            # Verifica se a data foi preenchida e se é no passado
+            if data_da_acao and data_da_acao < timezone.now():
+                # Adiciona um erro ao campo 'data' do formulário
+                form.add_error('data', 'A data da ação não pode ser no passado.')
+                messages.error(request, 'Por favor, corrija o erro no formulário.')
+            else:
+                # Se a data for válida, salva a ação
+                acao = form.save(commit=False) 
+                acao.organizador = request.user 
+                acao.save()
+                messages.success(request, 'Ação criada com sucesso!')
+                return redirect(acao.get_absolute_url())
     else:
         form = AcaoForm()
         
