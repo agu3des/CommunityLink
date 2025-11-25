@@ -1,26 +1,26 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Carrega o Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}CommunityLink{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body class="bg-gray-100 font-sans">
+<body>
 
-    <nav class="bg-white shadow-md">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between">
-                <div class="flex space-x-7">
+    <nav class="site-nav">
+        <div class="container">
+            <div class="nav-row">
+                <div class="nav-left">
                     <div>
                         <!-- Logo -->
-                        <a href="{% url 'acao_list' %}" class="flex items-center py-4 px-2">
-                            <span class="font-semibold text-gray-700 text-lg">CommunityLink</span>
+                        <a href="{% url 'acao_list' %}" class="brand">
+                            <span class="brand-text">CommunityLink</span>
                         </a>
                     </div>
                     <!-- Links da Nav Esquerda -->
-                    <div class="hidden md:flex items-center space-x-1">
+                    <div class="nav-links">
                         <a href="{% url 'acao_list' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Ações</a>
                         
                         {% if user.is_authenticated %}
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <!-- Links da Nav Direita -->
-                <div class="hidden md:flex items-center space-x-3">
+                <div class="nav-right">
                     {% if user.is_authenticated %}
 
                         <!-- --- Link de Notificações --- -->
@@ -56,7 +56,7 @@
                         </a>
 
                         <span class="py-2 px-2 text-gray-600">Olá, {{ user.username }}</span>
-                        <a href="/admin/logout/" class="py-2 px-2 font-medium text-white bg-red-500 rounded hover:bg-red-400 transition duration-300">Sair</a>
+                        <a href="/admin/logout/" class="btn btn-logout">Sair</a>
                     {% else %}
                         <a href="/admin/login/?next={{ request.path }}" class="py-2 px-2 font-medium text-gray-700 rounded hover:bg-gray-200 transition duration-300">Entrar</a>
                         <!-- Você precisará de uma view de registro depois -->
@@ -88,5 +88,6 @@
         {% endblock %}
     </main>
 
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

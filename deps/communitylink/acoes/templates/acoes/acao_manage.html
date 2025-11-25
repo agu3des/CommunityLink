@@ -34,7 +34,7 @@
                 <li class="flex flex-wrap justify-between items-center p-4 border rounded-md">
                     <div>
                         <strong class="text-lg">{{ inscricao.voluntario.username }}</strong>
-                        <span class="text-sm text-gray-500"> (em {{ inscricao.data_inscricao|date:"d/m/Y" }})</span>
+                        <span class="text-sm text-gray-500"> (em <span class="item-date">{{ inscricao.data_inscricao|date:"d/m/Y" }}</span>)</span>
                     </div>
                     <!-- Formulários de Ação -->
                     <div class="flex gap-2 mt-2 md:mt-0">

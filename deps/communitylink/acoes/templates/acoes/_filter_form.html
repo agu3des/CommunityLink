@@ -1,17 +1,14 @@
 <!-- O _ no início é uma convenção para "arquivos parciais" ou "componentes" -->
 
-<div class="bg-white p-6 rounded-lg shadow-md mb-6">
-    <h2 class="text-xl font-bold mb-4">Filtrar Ações</h2>
-    
+<div class="filter-card">
+    <h2 style="margin:0 0 0.5rem 0;">Filtrar Ações</h2>
     <!-- O formulário usa method="GET" para que os filtros apareçam na URL -->
     <form method="GET" action="">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            
+        <div class="form-grid">
             <!-- Filtro de Categoria -->
             <div>
-                <label for="categoria" class="block text-sm font-medium text-gray-700">Categoria</label>
-                <select name="categoria" id="categoria" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
-                    <!-- 'filter_values' virá da view -->
+                <label for="categoria">Categoria</label>
+                <select name="categoria" id="categoria">
                     <option value="">Todas</option>
                     {% for value, display in categorias_choices %}
                         <option value="{{ value }}" {% if filter_values.categoria == value %}selected{% endif %}>
@@ -20,29 +17,23 @@
                     {% endfor %}
                 </select>
             </div>
-            
+
             <!-- Filtro de Local -->
             <div>
-                <label for="local" class="block text-sm font-medium text-gray-700">Local</label>
-                <!-- O 'default' evita que apareça "None" no campo -->
-                <input type="text" name="local" id="local" value="{{ filter_values.local|default:'' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500" placeholder="Ex: Centro, BairroX">
+                <label for="local">Local</label>
+                <input type="text" name="local" id="local" value="{{ filter_values.local|default:'' }}" placeholder="Ex: Centro, BairroX">
             </div>
 
             <!-- Filtro de Data (Exemplo: A partir de) -->
             <div>
-                <label for="data_inicio" class="block text-sm font-medium text-gray-700">A partir de</label>
-                <input type="date" name="data_inicio" id="data_inicio" value="{{ filter_values.data_inicio|default:'' }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                <label for="data_inicio">A partir de</label>
+                <input type="date" name="data_inicio" id="data_inicio" value="{{ filter_values.data_inicio|default:'' }}">
             </div>
 
             <!-- Botões -->
-            <div class="flex items-end space-x-2">
-                <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
-                    Filtrar
-                </button>
-                <!-- Link para limpar os filtros -->
-                <a href="{{ request.path }}" class="w-full text-center bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">
-                    Limpar
-                </a>
+            <div style="display:flex; gap:0.5rem; align-items:flex-end;">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ request.path }}" class="btn btn-muted">Limpar</a>
             </div>
         </div>
     </form>
