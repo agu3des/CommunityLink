@@ -136,6 +136,11 @@ def acao_update(request, pk):
     if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para editar esta ação.')
         return redirect(acao.get_absolute_url())
+    
+    # --- TRAVA DE SEGURANÇA PARA AÇÕES PASSADAS ---
+    if acao.ja_aconteceu:
+        messages.error(request, 'Esta ação já foi concluída e não pode mais ser editada.')
+        return redirect(acao.get_absolute_url())
 
     if request.method == 'POST':
         form = AcaoForm(request.POST, instance=acao)
@@ -168,18 +173,45 @@ def acao_update(request, pk):
 # DELETE
 @login_required
 def acao_delete(request, pk):
-    """ Deleta uma ação. """
+    """ Deleta uma ação e notifica os inscritos """
     acao = get_object_or_404(Acao, pk=pk)
     
     # Superusuários também devem poder deletar
     if acao.organizador != request.user and not request.user.is_superuser:
         messages.error(request, 'Você não tem permissão para deletar esta ação.')
         return redirect(acao.get_absolute_url())
+    
+    # --- TRAVA DE SEGURANÇA ---
+    if acao.ja_aconteceu:
+        messages.error(request, 'Não é possível deletar uma ação que já aconteceu (para manter o histórico).')
+        return redirect(acao.get_absolute_url())
 
     if request.method == 'POST':
+        # --- PASSO A: Guardar informações antes de deletar ---
+        titulo_acao = acao.titulo
+        
+        # Pegamos os usuários que estão inscritos (Inscricao)
+        # Filtramos por status para não avisar quem já tinha sido rejeitado ou cancelado, se quiser
+        inscricoes_afetadas = Inscricao.objects.filter(acao=acao, status__in=['ACEITO', 'PENDENTE'])
+        
+        # Criamos uma lista com os objetos User dos voluntários
+        # É IMPORTANTE converter para list() agora, para buscar do banco antes de deletar
+        voluntarios_para_avisar = [i.voluntario for i in inscricoes_afetadas]
+
+        # --- PASSO B: Deletar a ação ---
+        # Isso vai apagar a Ação e todas as Inscrições (CASCADE)
         acao.delete()
-        messages.success(request, 'Ação deletada com sucesso.')
-        return redirect('acoes:acao_list') # Redireciona para a lista de ações
+
+        # --- PASSO C: Enviar Notificações ---
+        for voluntario in voluntarios_para_avisar:
+            Notificacao.objects.create(
+                destinatario=voluntario,
+                mensagem=f"Atenção: A ação '{titulo_acao}' foi cancelada/excluída pelo organizador.",
+                link="" # DEIXE VAZIO! A página da ação não existe mais (daria Erro 404)
+            )
+
+        messages.success(request, 'Ação deletada e voluntários notificados com sucesso.')
+        return redirect('acoes:acao_list')
         
     context = {'acao': acao}
     return render(request, 'acoes/acao_confirm_delete.html', context)

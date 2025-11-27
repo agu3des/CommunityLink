@@ -30,8 +30,15 @@
     <div style="border-top:1px solid rgba(15,23,42,0.04); padding-top:1rem; margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
         {% if user.is_authenticated %}
             {% if is_owner %}
-                <a href="{% url 'acoes:acao_update' acao.pk %}" class="btn btn-muted">Editar Ação</a>
-                <a href="{% url 'acoes:acao_delete' acao.pk %}" class="btn btn-danger">Deletar Ação</a>
+                {% if not acao.ja_aconteceu %}
+                    <a href="{% url 'acoes:acao_update' acao.pk %}" class="btn btn-muted">Editar Ação</a>
+                    <a href="{% url 'acoes:acao_delete' acao.pk %}" class="btn btn-danger">Deletar Ação</a>
+                {% else %}
+                    <span class="py-2 px-4 bg-gray-100 text-gray-500 rounded border border-gray-300 cursor-not-allowed">
+                        Ação Concluída (Edição bloqueada)
+                    </span>
+                {% endif %}
+                
                 <a href="{% url 'acoes:acao_manage' acao.pk %}" class="btn btn-muted">Gerenciar Inscrições</a>
             {% else %}
                 {% if ja_inscrito %}
