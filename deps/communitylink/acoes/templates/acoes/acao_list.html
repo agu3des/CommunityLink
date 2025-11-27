@@ -34,12 +34,4 @@
         {% endfor %}
     </div>
     {% include 'acoes/_pagination.html' with page_obj=acoes %}
-
-    <div style="background: #f0f0f0; padding: 10px; margin-top: 20px; border: 1px solid red;">
-        <p><strong>Debug Paginação:</strong></p>
-        <p>Tem outras páginas? {{ acoes.has_other_pages }}</p>
-        <p>Número da página atual: {{ acoes.number }}</p>
-        <p>Total de páginas: {{ acoes.paginator.num_pages }}</p>
-        <p>Total de itens: {{ acoes.paginator.count }}</p>
-    </div>
 {% endblock %}
