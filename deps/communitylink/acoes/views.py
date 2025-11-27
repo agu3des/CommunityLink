@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from .models import Acao, Inscricao, Notificacao
-from .forms import AcaoForm, SignUpForm, SignInForm
+from .forms import AcaoForm, SignUpForm, SignInForm, UserUpdateForm, PerfilUpdateForm
 from django.db.models import Q # Importante para filtros complexos
 import datetime # Importante para o filtro de data
 from django.urls import reverse # Para criar links nas notificações
@@ -355,8 +356,25 @@ def signup_view(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
+            # 1. Salva o usuário no banco (mas ainda sem o grupo)
             user = form.save()
+            # 2. Pega a escolha do formulário
+            tipo = form.cleaned_data.get('tipo_usuario')
+
+            # 3. Adiciona ao grupo correto
+            # Usamos get_or_create para garantir que o grupo exista e não dê erro
+            if tipo == 'ORGANIZADOR':
+                group, created = Group.objects.get_or_create(name='Organizadores')
+                user.groups.add(group)
+            else: # Default é Voluntario
+                group, created = Group.objects.get_or_create(name='Voluntarios')
+                user.groups.add(group)
+
+            # 4. Loga o usuário e redireciona
             login(request, user)
+
+            if tipo == 'ORGANIZADOR':
+                 return redirect('acoes:minhas_acoes')
             return redirect('acoes:acao_list')
     else:
         form = SignUpForm()
@@ -383,3 +401,58 @@ def logout_view(request):
         return HttpResponseNotAllowed(['POST'])
     logout(request)
     return redirect('acoes:signin')
+
+# --- VIEWS PARA ATUALIZAR PERFIL DO USUÁRIO ---
+@login_required
+def perfil_view(request):
+    """ Exibe e processa a atualização de dados do usuário. """
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = PerfilUpdateForm(request.POST, instance=request.user.perfil)
+        
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            messages.success(request, 'Seu perfil foi atualizado com sucesso!')
+            return redirect('acoes:perfil')
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = PerfilUpdateForm(instance=request.user.perfil)
+
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    return render(request, 'acoes/perfil.html', context)
+
+@login_required
+def historico_view(request):
+    """ 
+    Mostra ações PASSADAS.
+    Se organizador: Ações que ele criou e já acabaram.
+    Se voluntário: Ações que ele participou e já acabaram.
+    """
+    hoje = timezone.now()
+    
+    is_organizador = request.user.groups.filter(name='Organizadores').exists()
+    
+    if is_organizador:
+        # Ações criadas pelo user que já passaram da data
+        acoes = Acao.objects.filter(organizador=request.user, data__lt=hoje).order_by('-data')
+        titulo = "Histórico de Ações Organizadas"
+    else:
+        # Ações que o user se inscreveu (ACEITO) e já passaram da data
+        inscricoes = Inscricao.objects.filter(
+            voluntario=request.user, 
+            status='ACEITO', 
+            acao__data__lt=hoje
+        ).order_by('-acao__data')
+        # Extrai apenas as ações dessas inscrições
+        acoes = [i.acao for i in inscricoes]
+        titulo = "Histórico de Participações"
+
+    context = {
+        'acoes': acoes,
+        'titulo_historico': titulo
+    }
+    return render(request, 'acoes/historico.html', context)

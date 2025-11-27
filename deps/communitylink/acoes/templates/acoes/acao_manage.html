@@ -39,7 +39,7 @@
                     <!-- Formulários de Ação -->
                     <div class="flex gap-2 mt-2 md:mt-0">
                         <!-- Botão Aceitar -->
-                        <form action="{% url 'acao_manage' acao.pk %}" method="POST" class="inline">
+                        <form action="{% url 'acoes:acao_manage' acao.pk %}" method="POST" class="inline">
                             {% csrf_token %}
                             <input type="hidden" name="inscricao_id" value="{{ inscricao.id }}">
                             <input type="hidden" name="status" value="ACEITO">
@@ -51,7 +51,7 @@
                             </button>
                         </form>
                         <!-- Botão Rejeitar -->
-                        <form action="{% url 'acao_manage' acao.pk %}" method="POST" class="inline">
+                        <form action="{% url 'acoes:acao_manage' acao.pk %}" method="POST" class="inline">
                             {% csrf_token %}
                             <input type="hidden" name="inscricao_id" value="{{ inscricao.id }}">
                             <input type="hidden" name="status" value="REJEITADO">

@@ -2,6 +2,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Acao(models.Model):
     # Campos que você definiu
@@ -99,3 +101,31 @@ class Notificacao(models.Model):
 
     def __str__(self):
         return f"Notificação para {self.destinatario.username}: {self.mensagem[:30]}..."
+    
+# --- Modelo de Perfil para armazenar informações adicionais do usuário ---
+class Perfil(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Armazenar as categorias preferidas como texto separado por vírgula
+    # Ex: "SAUDE,EDUCACAO"
+    preferencias = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
+    # Método auxiliar para pegar as preferências como lista no template
+    def get_preferencias_list(self):
+        if self.preferencias:
+            return self.preferencias.split(',')
+        return []
+
+# --- SIGNALS (Para criar o perfil automaticamente) ---
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Perfil.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.perfil.save()

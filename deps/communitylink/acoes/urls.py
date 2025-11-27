@@ -33,4 +33,8 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'), #Registrar usuário
     path('signin/', views.signin_view, name='signin'), #Login do usuário
     path('logout/', views.logout_view, name='logout'), #Logout do usuário
+
+    # Perfil
+    path('perfil/', views.perfil_view, name='perfil'), #Ver/editar perfil
+    path('historico/', views.historico_view, name='historico'),
 ]

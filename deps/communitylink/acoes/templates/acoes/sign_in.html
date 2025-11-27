@@ -11,13 +11,21 @@
     <h1>Entrar</h1>
     <form method="post" novalidate>
       {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-error" style="color: red; margin-bottom: 15px; padding: 10px; background-color: #fee2e2; border-radius: 5px;">
+          {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+
       <input type="hidden" name="next" value="{{ request.GET.next }}">
       {% for field in form %}
         <div class="form-row">
           {{ field.label_tag }}
           {{ field }}
           {% if field.errors %}
-            <div class="error">{{ field.errors }}</div>
+            <div class="error" style="color: red; font-size: 0.875rem;">{{ field.errors.0 }}</div>
           {% endif %}
         </div>
       {% endfor %}

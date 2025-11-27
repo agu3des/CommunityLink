@@ -1,0 +1,31 @@
+{% extends 'acoes/base.html' %}
+
+{% block title %}Histórico - CommunityLink{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">{{ titulo_historico }}</h1>
+        <a href="{% url 'acoes:perfil' %}" class="text-gray-600 hover:text-gray-900">&larr; Voltar ao Perfil</a>
+    </div>
+
+    {% if not acoes %}
+        <div class="bg-gray-100 p-8 rounded-lg text-center">
+            <p class="text-lg text-gray-600">Nenhuma ação encontrada no histórico.</p>
+        </div>
+    {% else %}
+        <div class="space-y-4">
+            {% for acao in acoes %}
+            <div class="bg-white border-l-4 border-gray-400 shadow-md p-6 rounded-r-lg flex justify-between items-center opacity-75 hover:opacity-100 transition">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">{{ acao.titulo }}</h2>
+                    <p class="text-gray-600">Realizada em: <span class="font-semibold">{{ acao.data|date:"d/m/Y" }}</span></p>
+                    <p class="text-sm text-gray-500">{{ acao.local }}</p>
+                </div>
+                <a href="{{ acao.get_absolute_url }}" class="text-blue-600 hover:underline">Ver detalhes</a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
