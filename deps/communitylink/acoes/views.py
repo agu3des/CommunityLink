@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group
@@ -12,6 +13,17 @@ from django.db.models import Q # Importante para filtros complexos
 import datetime # Importante para o filtro de data
 from django.urls import reverse # Para criar links nas notificações
 from django.utils import timezone # para a lista de acoes gerais ser mostrada de hoje em diante
+
+# --- FUNÇÃO AUXILIAR DE PAGINAÇÃO ---
+def paginar_queryset(request, queryset, itens_por_pagina=5, param_name='page'):
+    """
+    Pagina um queryset e retorna o objeto da página atual.
+    param_name permite usar nomes diferentes na URL (ex: page_acoes, page_inscricoes)
+    """
+    paginator = Paginator(queryset, itens_por_pagina)
+    page_number = request.GET.get(param_name)
+    page_obj = paginator.get_page(page_number)
+    return page_obj
 
 # --- Lógica de Filtro Reutilizável ---
 # (Vamos colocar a lógica de filtro aqui para não repetir)
@@ -58,10 +70,14 @@ def acao_list(request):
     # Ordena DEPOIS de filtrar
     acoes_list = acoes_list.order_by('data')
 
+    # Paginação
+    page_obj = paginar_queryset(request, acoes_list, itens_por_pagina=10)
+
     context = {
-        'acoes': acoes_list,
+        'acoes': page_obj,
         'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções de categoria
-        'filter_values': request.GET # Passa os valores do filtro (para preencher o form)
+        'filter_values': request.GET, # Passa os valores do filtro (para preencher o form)
+        'page_param': 'page' # Nome do parametro na URL
     }
     return render(request, 'acoes/acao_list.html', context)
 
@@ -374,11 +390,15 @@ def minhas_inscricoes(request):
     inscricoes_list = filtrar_acoes_queryset(request, inscricoes_list)
     
     inscricoes_list = inscricoes_list.order_by('acao__data')
+
+    # Paginação
+    page_obj = paginar_queryset(request, inscricoes_list)
     
     context = {
-        'inscricoes': inscricoes_list,
+        'inscricoes': page_obj,
         'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções
-        'filter_values': request.GET # Passa os valores
+        'filter_values': request.GET, # Passa os valores
+        'page_param': 'page'
     }
     return render(request, 'acoes/minhas_inscricoes.html', context)
 
@@ -394,11 +414,15 @@ def minhas_acoes(request):
     acoes_list = filtrar_acoes_queryset(request, acoes_list)
         
     acoes_list = acoes_list.order_by('-data')
+
+    # Paginação
+    page_obj = paginar_queryset(request, acoes_list)
     
     context = {
-        'acoes': acoes_list,
+        'acoes': page_obj,
         'categorias_choices': Acao.CATEGORIA_CHOICES, # Passa as opções
-        'filter_values': request.GET # Passa os valores
+        'filter_values': request.GET, # Passa os valores
+        'page_param': 'page'
     }
     return render(request, 'acoes/minhas_acoes.html', context)
 
@@ -406,23 +430,28 @@ def minhas_acoes(request):
 
 @login_required
 def notificacoes_list(request):
-    """ Mostra a lista de notificações do usuário e marca como lidas. """
+    qs = Notificacao.objects.filter(destinatario=request.user)
     
-    # Pega todas as notificações do usuário logado
-    notificacoes = Notificacao.objects.filter(destinatario=request.user)
+    # Marcando como lida (Pode manter aqui ou fazer via AJAX, mas vamos manter simples)
+    # OBS: Ao paginar, ele só vai marcar como lida as 10 da página atual.
+    nao_lidas = qs.filter(lida=False)
     
-    # Pega as não lidas para atualizar
-    nao_lidas = notificacoes.filter(lida=False)
+    # Paginação
+    page_obj = paginar_queryset(request, qs, itens_por_pagina=10)
+    
+    # Atualiza as que estão SENDO EXIBIDAS agora
+    for notif in page_obj:
+        if not notif.lida:
+            notif.lida = True
+            notif.save()
 
-    # Pega o número de lidas para o botão
-    lidas_count = notificacoes.filter(lida=True).count()
-    
-    # Marca todas como lidas (ao visitar a página)
-    nao_lidas.update(lida=True)
-    
+    # Recalcula contagem geral para o botão limpar
+    lidas_count = Notificacao.objects.filter(destinatario=request.user, lida=True).count()
+
     context = {
-        'notificacoes': notificacoes,
-        'lidas_count': lidas_count # Passa a contagem para o template
+        'notificacoes': page_obj,
+        'lidas_count': lidas_count,
+        'page_param': 'page'
     }
     return render(request, 'acoes/notificacoes_list.html', context)
 
@@ -552,21 +581,23 @@ def historico_view(request):
         acao__data__lt=hoje
     )
     # Aplica filtros
-    qs_participacao = filtrar_acoes_queryset(request, qs_participacao)
-    historico_participacoes = qs_participacao.order_by('-acao__data')
+    qs_participacao = filtrar_acoes_queryset(request, qs_participacao).order_by('-acao__data')
+
+    # Paginando com nome diferente 'page_part'
+    page_participacoes = paginar_queryset(request, qs_participacao, 5, param_name='page_part')
 
     # 2. Histórico de ORGANIZAÇÃO (Apenas se for organizador)
-    historico_organizadas = None
+    page_organizadas = None
     
     if is_organizador:
         qs_organizacao = Acao.objects.filter(organizador=request.user, data__lt=hoje)
         # Aplica filtros
-        qs_organizacao = filtrar_acoes_queryset(request, qs_organizacao)
-        historico_organizadas = qs_organizacao.order_by('-data')
-
+        qs_organizacao = filtrar_acoes_queryset(request, qs_organizacao).order_by('-data')
+        # Paginando com nome diferente 'page_org'
+        page_organizadas = paginar_queryset(request, qs_organizacao, 5, param_name='page_org')
     context = {
-        'historico_participacoes': historico_participacoes,
-        'historico_organizadas': historico_organizadas, # Será None se não for organizador
+        'historico_participacoes': page_participacoes,
+        'historico_organizadas': page_organizadas, # Será None se não for organizador
         'is_organizador': is_organizador,
         'titulo_historico': "Meu Histórico",
         'categorias_choices': Acao.CATEGORIA_CHOICES,
@@ -578,46 +609,47 @@ def historico_view(request):
 @login_required
 def inscricao_cancel(request, pk):
     """ Permite ao voluntário cancelar sua própria inscrição. """
-    # Busca a inscrição onde o usuário logado é o voluntário
     inscricao = get_object_or_404(Inscricao, pk=pk, voluntario=request.user)
     acao = inscricao.acao
-
-    # --- TRAVA DE SEGURANÇA 1 ---
+    
+    # Trava de segurança: não cancela se já passou
     if acao.ja_aconteceu:
         messages.error(request, 'Não é possível cancelar a inscrição em uma ação que já aconteceu.')
         return redirect('acoes:minhas_inscricoes')
-    # ----------------------------
 
-    status_anterior = inscricao.status
-    
     if request.method == 'POST':
-        # Altera status para CANCELADO
+        # Guardamos o status antes de mudar, para saber se precisamos apagar a notificação
+        status_anterior = inscricao.status
+        
+        # Muda o status
         inscricao.status = 'CANCELADO'
         inscricao.save()
         
         messages.success(request, f"Sua inscrição em '{acao.titulo}' foi cancelada.")
-        
-        # 1. Notificar Organizador
-        Notificacao.objects.create(
-            destinatario=acao.organizador,
-            mensagem=f"{request.user.username} cancelou a inscrição na ação '{acao.titulo}'.",
-            link=reverse('acoes:acao_manage', args=[acao.pk])
-        )
-        
-        # 2. Remover notificação pendente do organizador (Se o voluntário não tinha sido aceito ainda)
+
+        # --- LÓGICA DE APAGAR A NOTIFICAÇÃO DO ORGANIZADOR ---
+        # Só apagamos se o organizador ainda não tinha aceito (ou seja, estava PENDENTE)
         if status_anterior == 'PENDENTE':
-            # Tenta encontrar notificações não lidas para o organizador sobre essa ação
-            # Como a mensagem é dinâmica, buscamos pelo link ou parte da mensagem
-            # A estratégia mais segura pelo link da ação_manage:
+            # O link que foi enviado na notificação original
             link_alvo = reverse('acoes:acao_manage', args=[acao.pk])
             
-            # Deleta notificações não lidas do organizador que tenham esse link 
-            # E que contenham o nome do usuário na mensagem (para não apagar notif de outros users)
+            # Buscamos a notificação exata para deletar:
+            # 1. Para o organizador dessa ação
+            # 2. Que tenha o link de gerenciar essa ação específica
+            # 3. Que contenha o nome do usuário que está cancelando (para não apagar notif de outros)
             Notificacao.objects.filter(
                 destinatario=acao.organizador,
-                lida=False,
                 link=link_alvo,
-                mensagem__contains=request.user.username
-            ).delete()
+                mensagem__contains=request.user.username # Procura o nome do voluntário na mensagem
+            ).delete() # <--- ISSO REMOVE A NOTIFICAÇÃO DO BANCO
+        
+        # (Opcional) Se você quiser avisar o organizador que ele cancelou
+        # Apenas se ele JÁ TIVESSE SIDO ACEITO. Se estava pendente, melhor só sumir.
+        elif status_anterior == 'ACEITO':
+            Notificacao.objects.create(
+                destinatario=acao.organizador,
+                mensagem=f"{request.user.username} cancelou a inscrição confirmada na ação '{acao.titulo}'.",
+                link=reverse('acoes:acao_manage', args=[acao.pk])
+            )
 
     return redirect('acoes:minhas_inscricoes')

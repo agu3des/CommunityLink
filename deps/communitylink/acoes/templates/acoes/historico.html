@@ -50,6 +50,7 @@
                         </div>
                     </div>
                 {% endfor %}
+                {% include 'acoes/_pagination.html' with page_obj=historico_organizadas page_param='page_org' %}
             </div>
         {% endif %}
     {% endif %}
@@ -93,6 +94,7 @@
                 </div>
             {% endfor %}
         </div>
+        {% include 'acoes/_pagination.html' with page_obj=historico_participacoes page_param='page_part' %}
     {% endif %}
 
 </div>
