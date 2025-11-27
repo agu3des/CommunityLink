@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = "acoes"
+
 urlpatterns = [
     # READ
     path('', views.acao_list, name='acao_list'),
@@ -18,6 +20,7 @@ urlpatterns = [
     # Inscrição
     path('<int:pk>/inscrever/', views.acao_apply, name='acao_apply'),
     path('<int:pk>/gerenciar/', views.acao_manage, name='acao_manage'),
+    path('inscricao/<int:pk>/cancelar/', views.inscricao_cancel, name='inscricao_cancel'),
 
     #Páginas de usuário
     path('minhas-inscricoes/', views.minhas_inscricoes, name='minhas_inscricoes'),
@@ -26,4 +29,13 @@ urlpatterns = [
     # Notificações
     path('notificacoes/', views.notificacoes_list, name='notificacoes_list'),
     path('notificacoes/limpar/', views.notificacoes_clear, name='notificacoes_clear'),
+
+    #Auth
+    path('signup/', views.signup_view, name='signup'), #Registrar usuário
+    path('signin/', views.signin_view, name='signin'), #Login do usuário
+    path('logout/', views.logout_view, name='logout'), #Logout do usuário
+
+    # Perfil
+    path('perfil/', views.perfil_view, name='perfil'), #Ver/editar perfil
+    path('historico/', views.historico_view, name='historico'),
 ]

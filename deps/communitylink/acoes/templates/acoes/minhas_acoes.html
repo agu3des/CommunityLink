@@ -8,7 +8,7 @@
     <div class="bg-white rounded-lg shadow-xl p-6">
         {% if not acoes %}
             <p class="text-gray-700">Você ainda não criou nenhuma ação.</p>
-            <a href="{% url 'acao_create' %}" class="mt-4 inline-block text-green-600 hover:text-green-800 font-semibold">
+            <a href="{% url 'acoes:acao_create' %}" class="mt-4 inline-block text-green-600 hover:text-green-800 font-semibold">
                 Criar sua primeira ação &rarr;
             </a>
         {% endif %}
@@ -36,7 +36,7 @@
                     </div>
                     <!-- Link para gerenciar -->
                     <div class="mt-4">
-                        <a href="{% url 'acao_manage' acao.pk %}" class="text-blue-600 hover:underline font-semibold">
+                        <a href="{% url 'acoes:acao_manage' acao.pk %}" class="text-blue-600 hover:underline font-semibold">
                             Gerenciar Inscrições &rarr;
                         </a>
                     </div>
@@ -44,4 +44,5 @@
             {% endfor %}
         </ul>
     </div>
+    {% include 'acoes/_pagination.html' with page_obj=acoes %}
 {% endblock %}

@@ -1,0 +1,51 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- <link rel="stylesheet" href="{% static '' %}"> -->
+  <title>Cadastre-se - CommunityLink</title>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Cadastre-se</h1>
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-error" style="color: red; margin-bottom: 10px;">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        <div class="form-row">
+            {% if field.name == 'tipo_usuario' %}
+                <label style="font-weight:bold; margin-bottom:5px; display:block;">{{ field.label }}</label>
+                <div style="display:flex; gap:15px; margin-bottom:15px;">
+                    {% for radio in field %}
+                    <div style="display:flex; align-items:center; gap:5px;">
+                        {{ radio.tag }}
+                        <span style="font-weight:normal;">{{ radio.choice_label }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ field.label_tag }}
+                {{ field }}
+            {% endif %}
+
+            {% if field.errors %}
+            <div class="error" style="color: red; font-size: 0.875rem; margin-top: 4px;">{{ field.errors.0 }}</div>
+            {% endif %}
+        </div>
+      {% endfor %}
+      
+      <div class="form-actions">
+        <button type="submit" class="btn">Criar conta</button>
+      </div>
+    </form>
+    <p>Já tem conta? <a href="{% url 'acoes:signin' %}">Entrar</a></p>
+  </div>
+</body>
+</html>

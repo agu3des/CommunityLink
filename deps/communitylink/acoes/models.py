@@ -1,7 +1,10 @@
 # Importe o modelo de User padrão do Django
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Acao(models.Model):
     # Campos que você definiu
@@ -37,8 +40,15 @@ class Acao(models.Model):
         related_name='acoes_inscritas', # Assim, podemos fazer: user.acoes_inscritas.all()
         blank=True                   # A ação pode começar sem nenhum voluntário
     )
+
+    notas_organizador = models.TextField(blank=True, null=True, help_text="Notas privadas do organizador sobre a execução da ação.")
     
     # --- Propriedades Úteis (Lógica no Modelo) ---
+
+    @property
+    def ja_aconteceu(self):
+        """ Retorna True se a data da ação é anterior ao momento atual. """
+        return self.data < timezone.now()
     
     @property
     def vagas_preenchidas(self):
@@ -55,7 +65,7 @@ class Acao(models.Model):
         
     def get_absolute_url(self):
         """ Retorna a URL para a página de detalhes desta ação. """
-        return reverse('acao_detail', kwargs={'pk': self.pk})
+        return reverse('acoes:acao_detail', kwargs={'pk': self.pk})
 
 
 class Inscricao(models.Model):
@@ -65,6 +75,7 @@ class Inscricao(models.Model):
         ('PENDENTE', 'Pendente'),
         ('ACEITO', 'Aceito'),
         ('REJEITADO', 'Rejeitado'),
+        ('CANCELADO', 'Cancelado'),
     ]
 
     # As duas 'pernas' da relação
@@ -76,6 +87,8 @@ class Inscricao(models.Model):
     
     # Data em que a solicitação foi feita
     data_inscricao = models.DateTimeField(auto_now_add=True)
+
+    comentario = models.TextField(blank=True, null=True)
 
     class Meta:
         # Garante que um usuário não possa se inscrever 2x na mesma ação
@@ -99,3 +112,31 @@ class Notificacao(models.Model):
 
     def __str__(self):
         return f"Notificação para {self.destinatario.username}: {self.mensagem[:30]}..."
+    
+# --- Modelo de Perfil para armazenar informações adicionais do usuário ---
+class Perfil(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
+    endereco = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Armazenar as categorias preferidas como texto separado por vírgula
+    # Ex: "SAUDE,EDUCACAO"
+    preferencias = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Perfil de {self.user.username}"
+
+    # Método auxiliar para pegar as preferências como lista no template
+    def get_preferencias_list(self):
+        if self.preferencias:
+            return self.preferencias.split(',')
+        return []
+
+# --- SIGNALS (Para criar o perfil automaticamente) ---
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Perfil.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.perfil.save()

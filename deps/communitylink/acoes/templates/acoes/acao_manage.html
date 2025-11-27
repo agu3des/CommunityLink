@@ -39,7 +39,7 @@
                     <!-- Formulários de Ação -->
                     <div class="flex gap-2 mt-2 md:mt-0">
                         <!-- Botão Aceitar -->
-                        <form action="{% url 'acao_manage' acao.pk %}" method="POST" class="inline">
+                        <form action="{% url 'acoes:acao_manage' acao.pk %}" method="POST" class="inline">
                             {% csrf_token %}
                             <input type="hidden" name="inscricao_id" value="{{ inscricao.id }}">
                             <input type="hidden" name="status" value="ACEITO">
@@ -51,7 +51,7 @@
                             </button>
                         </form>
                         <!-- Botão Rejeitar -->
-                        <form action="{% url 'acao_manage' acao.pk %}" method="POST" class="inline">
+                        <form action="{% url 'acoes:acao_manage' acao.pk %}" method="POST" class="inline">
                             {% csrf_token %}
                             <input type="hidden" name="inscricao_id" value="{{ inscricao.id }}">
                             <input type="hidden" name="status" value="REJEITADO">
@@ -72,7 +72,19 @@
             <h2 class="text-2xl font-semibold text-green-700 mb-4">Voluntários Aceitos ({{ aceitas.count }})</h2>
             <ul class="space-y-2">
                 {% for inscricao in aceitas %}
-                    <li class="text-gray-700">{{ inscricao.voluntario.username }}</li>
+                    <li class="flex justify-between items-center border-b pb-2">
+                        <span class="text-gray-700 font-medium">{{ inscricao.voluntario.username }}</span>
+                        
+                        {% if not acao.ja_aconteceu %}
+                            <form action="{% url 'acoes:acao_manage' acao.pk %}" method="POST" onsubmit="return confirm('Tem certeza que deseja remover este voluntário?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="inscricao_id" value="{{ inscricao.id }}">
+                                <input type="hidden" name="status" value="REMOVIDO"> <button type="submit" class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-full transition">
+                                    Remover
+                                </button>
+                            </form>
+                        {% endif %}
+                    </li>
                 {% empty %}
                     <li class="text-gray-500">Nenhum voluntário aceito.</li>
                 {% endfor %}
