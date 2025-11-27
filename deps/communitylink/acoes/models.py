@@ -55,7 +55,7 @@ class Acao(models.Model):
         
     def get_absolute_url(self):
         """ Retorna a URL para a página de detalhes desta ação. """
-        return reverse('acao_detail', kwargs={'pk': self.pk})
+        return reverse('acoes:acao_detail', kwargs={'pk': self.pk})
 
 
 class Inscricao(models.Model):

@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = "acoes"
+
 urlpatterns = [
     # READ
     path('', views.acao_list, name='acao_list'),
@@ -26,4 +28,9 @@ urlpatterns = [
     # Notificações
     path('notificacoes/', views.notificacoes_list, name='notificacoes_list'),
     path('notificacoes/limpar/', views.notificacoes_clear, name='notificacoes_clear'),
+
+    #Auth
+    path('signup/', views.signup_view, name='signup'), #Registrar usuário
+    path('signin/', views.signin_view, name='signin'), #Login do usuário
+    path('logout/', views.logout_view, name='logout'), #Logout do usuário
 ]

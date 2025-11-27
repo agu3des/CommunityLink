@@ -8,7 +8,7 @@
     
     <!-- MUDANÇA: Botão de Limpar -->
     {% if lidas_count > 0 %}
-        <form method="POST" action="{% url 'notificacoes_clear' %}">
+        <form method="POST" action="{% url 'acoes:notificacoes_clear' %}">
             {% csrf_token %}
             <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 text-sm">
                 Limpar Lidas ({{ lidas_count }})

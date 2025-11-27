@@ -1,9 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from .models import Acao, Inscricao, Notificacao
-from .forms import AcaoForm
+from .forms import AcaoForm, SignUpForm, SignInForm
 from django.db.models import Q # Importante para filtros complexos
 import datetime # Importante para o filtro de data
 from django.urls import reverse # Para criar links nas notificações
@@ -46,7 +49,7 @@ def filtrar_acoes_queryset(request, queryset):
 def acao_list(request):
     """ Mostra a lista de todas as ações. """
     # filtra apenas ações de hoje em diante.
-    acoes_list = Acao.objects.filter(data__gte=timezone.now())
+    acoes_list = Acao.objects.filter(data__gte=timezone.localdate())
 
     # --- Aplica os filtros do formulário (categoria, local, etc.) ---
     acoes_list = filtrar_acoes_queryset(request, acoes_list)
@@ -81,7 +84,7 @@ def acao_detail(request, pk):
         'acao': acao,
         'ja_inscrito': ja_inscrito,
         'inscricao_status': inscricao_status,
-        'is_organizador': acao.organizador == request.user
+        'is_owner': acao.organizador == request.user
     }
     return render(request, 'acoes/acao_detail.html', context)
 
@@ -94,7 +97,7 @@ def acao_create(request):
     is_organizador = request.user.groups.filter(name='Organizadores').exists()
     if not is_organizador and not request.user.is_superuser:
         messages.error(request, 'Apenas organizadores podem criar ações.')
-        return redirect('acao_list')
+        return redirect('acoes:acao_list')
     
     if request.method == 'POST':
         form = AcaoForm(request.POST)
@@ -136,7 +139,12 @@ def acao_update(request, pk):
     if request.method == 'POST':
         form = AcaoForm(request.POST, instance=acao)
         if form.is_valid():
-            form.save()
+            # validação da data (igual ao create)
+            data_da_acao = form.cleaned_data.get('data')
+            if data_da_acao and data_da_acao < timezone.localdate():
+                form.add_error('data', 'A data da ação não pode ser no passado!')
+                return render(request, 'acoes/acao_form.html', {'form': form, 'acao': acao})
+            acao = form.save()
             messages.success(request, 'Ação atualizada com sucesso!')
             return redirect(acao.get_absolute_url())
     else:
@@ -159,7 +167,7 @@ def acao_delete(request, pk):
     if request.method == 'POST':
         acao.delete()
         messages.success(request, 'Ação deletada com sucesso.')
-        return redirect('acao_list') # Redireciona para a lista de ações
+        return redirect('acoes:acao_list') # Redireciona para a lista de ações
         
     context = {'acao': acao}
     return render(request, 'acoes/acao_confirm_delete.html', context)
@@ -170,7 +178,7 @@ def acao_delete(request, pk):
 def acao_apply(request, pk):
     """ View para um voluntário se inscrever em uma ação. """
     if request.method != 'POST':
-        return redirect('acao_detail', pk=pk)
+        return redirect('acoes:acao_detail', pk=pk)
 
     acao = get_object_or_404(Acao, pk=pk)
 
@@ -198,7 +206,7 @@ def acao_apply(request, pk):
         Notificacao.objects.create(
             destinatario=acao.organizador,
             mensagem=f"{request.user.username} solicitou participação em '{acao.titulo}'.",
-            link=reverse('acao_manage', args=[acao.pk]) # Link para a página de gerenciamento
+            link=reverse('acoes:acao_manage', args=[acao.pk]) # Link para a página de gerenciamento
         )
     else:
         messages.info(request, f'Você já tem uma solicitação ({inscricao.get_status_display()}) para esta ação.')
@@ -223,7 +231,7 @@ def acao_manage(request, pk):
         
         if novo_status not in ['ACEITO', 'REJEITADO']:
             messages.error(request, 'Status inválido.')
-            return redirect('acao_manage', pk=pk)
+            return redirect('acoes:acao_manage', pk=pk)
             
         try:
             inscricao = Inscricao.objects.get(id=inscricao_id, acao=acao)
@@ -241,13 +249,13 @@ def acao_manage(request, pk):
                 Notificacao.objects.create(
                     destinatario=inscricao.voluntario,
                     mensagem=f"Sua inscrição para '{acao.titulo}' foi {status_display}.",
-                    link=reverse('acao_detail', args=[acao.pk]) # Link para a página da ação
+                    link=reverse('acoes:acao_detail', args=[acao.pk]) # Link para a página da ação
                 )
                 
         except Inscricao.DoesNotExist:
             messages.error(request, 'Solicitação não encontrada.')
             
-        return redirect('acao_manage', pk=pk)
+        return redirect('acoes:acao_manage', pk=pk)
 
 
     # Pega todas as inscrições para esta ação
@@ -333,11 +341,45 @@ def notificacoes_clear(request):
     
     # Só aceita POST para segurança
     if request.method != 'POST':
-        return redirect('notificacoes_list')
+        return redirect('acoes:notificacoes_list')
 
     # Deleta apenas as notificações que já foram lidas
     Notificacao.objects.filter(destinatario=request.user, lida=True).delete()
     
     messages.success(request, 'Notificações lidas foram apagadas.')
     
-    return redirect('notificacoes_list')
+    return redirect('acoes:notificacoes_list')
+
+# --- VIEWS DE AUTENTICAÇÃO ---
+def signup_view(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('acoes:acao_list')
+    else:
+        form = SignUpForm()
+    return render(request, 'acoes/sign_up.html', {'form': form})
+
+
+def signin_view(request):
+    if request.method == 'POST':
+        form = SignInForm(request=request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+            return redirect('acoes:acao_list')
+    else:
+        form = SignInForm()
+    return render(request, 'acoes/sign_in.html', {'form': form})
+
+
+def logout_view(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    logout(request)
+    return redirect('acoes:signin')

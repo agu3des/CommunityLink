@@ -10,7 +10,7 @@
     <div class="card">
         {% if not inscricoes %}
             <p class="text-gray-700">Você ainda não se inscreveu em nenhuma ação.</p>
-            <a href="{% url 'acao_list' %}" class="mt-4 inline-block text-accent-600 hover:text-accent font-semibold">
+            <a href="{% url 'acoes:acao_list' %}" class="mt-4 inline-block text-accent-600 hover:text-accent font-semibold">
                 Ver ações disponíveis &rarr;
             </a>
         {% endif %}
