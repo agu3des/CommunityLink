@@ -6,3 +6,8 @@ services:
       - .:/app
     ports:
       - "8080:8000"
+  tests:
+    build: .
+    command: pytest --cov=. --cov-report=xml --cov-report=html
+    volumes:
+      - .:/app
