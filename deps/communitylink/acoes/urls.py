@@ -20,6 +20,7 @@ urlpatterns = [
     # Inscrição
     path('<int:pk>/inscrever/', views.acao_apply, name='acao_apply'),
     path('<int:pk>/gerenciar/', views.acao_manage, name='acao_manage'),
+    path('inscricao/<int:pk>/cancelar/', views.inscricao_cancel, name='inscricao_cancel'),
 
     #Páginas de usuário
     path('minhas-inscricoes/', views.minhas_inscricoes, name='minhas_inscricoes'),

@@ -142,11 +142,22 @@ def acao_update(request, pk):
         if form.is_valid():
             # validação da data (igual ao create)
             data_da_acao = form.cleaned_data.get('data')
-            if data_da_acao and data_da_acao < timezone.localdate():
+            if data_da_acao and data_da_acao < timezone.now():
                 form.add_error('data', 'A data da ação não pode ser no passado!')
                 return render(request, 'acoes/acao_form.html', {'form': form, 'acao': acao})
             acao = form.save()
             messages.success(request, 'Ação atualizada com sucesso!')
+
+            # --- NOVO: Notificar voluntários sobre a edição ---
+            # Pega todos que estão aceitos ou pendentes
+            inscritos = Inscricao.objects.filter(acao=acao, status__in=['ACEITO', 'PENDENTE'])
+            for inscr in inscritos:
+                Notificacao.objects.create(
+                    destinatario=inscr.voluntario,
+                    mensagem=f"A ação '{acao.titulo}' sofreu alterações pelo organizador.",
+                    link=reverse('acoes:acao_detail', args=[acao.pk])
+                )
+            
             return redirect(acao.get_absolute_url())
     else:
         form = AcaoForm(instance=acao)
@@ -192,6 +203,11 @@ def acao_apply(request, pk):
     if acao.esta_cheia:
         messages.error(request, 'Esta ação já atingiu o número máximo de voluntários.')
         return redirect(acao.get_absolute_url())
+    
+    # Validação extra: não pode entrar se já passou
+    if acao.ja_aconteceu:
+        messages.error(request, 'Esta ação já foi concluída.')
+        return redirect(acao.get_absolute_url())
 
     # Cria a inscrição (ou informa se já existe)
     # o .get_or_create() retorna (objeto, foi_criado)
@@ -200,17 +216,32 @@ def acao_apply(request, pk):
         voluntario=request.user
     )
 
+    # CASO 1: Nova inscrição (Created = True)
     if created:
         messages.success(request, 'Sua solicitação foi enviada! O organizador irá analisá-la.')
-
-        # --- Criar Notificação para o Organizador ---
+        # Notificar Organizador
         Notificacao.objects.create(
             destinatario=acao.organizador,
             mensagem=f"{request.user.username} solicitou participação em '{acao.titulo}'.",
-            link=reverse('acoes:acao_manage', args=[acao.pk]) # Link para a página de gerenciamento
+            link=reverse('acoes:acao_manage', args=[acao.pk])
         )
+
+    # CASO 2: Já existia, mas estava CANCELADA ou REJEITADA (Permitir tentar de novo)
+    elif inscricao.status in ['CANCELADO', 'REJEITADO']:
+        inscricao.status = 'PENDENTE'
+        inscricao.save()
+        messages.success(request, 'Sua solicitação foi reativada e enviada para análise!')
+        
+        # Notificar Organizador novamente
+        Notificacao.objects.create(
+            destinatario=acao.organizador,
+            mensagem=f"{request.user.username} solicitou participação novamente em '{acao.titulo}'.",
+            link=reverse('acoes:acao_manage', args=[acao.pk])
+        )
+
+    # CASO 3: Já existe e está Pendente ou Aceito
     else:
-        messages.info(request, f'Você já tem uma solicitação ({inscricao.get_status_display()}) para esta ação.')
+        messages.info(request, f'Você já tem uma solicitação ativa ({inscricao.get_status_display()}) para esta ação.')
 
     return redirect(acao.get_absolute_url())
 
@@ -236,22 +267,49 @@ def acao_manage(request, pk):
             
         try:
             inscricao = Inscricao.objects.get(id=inscricao_id, acao=acao)
-            
-            # Se for aceitar, verifica se ainda há vagas
-            if novo_status == 'ACEITO' and acao.esta_cheia:
-                messages.warning(request, 'Não foi possível aceitar. As vagas estão preenchidas.')
-            else:
-                inscricao.status = novo_status
-                inscricao.save()
-                messages.success(request, f'Solicitação de {inscricao.voluntario.username} foi atualizada.')
 
-                # --- Criar Notificação para o Voluntário ---
-                status_display = "Aceita" if novo_status == 'ACEITO' else "Rejeitada"
+            # Lógica para remover (que é basicamente cancelar/rejeitar alguém já aceito)
+            if novo_status == 'REMOVIDO': 
+                # --- TRAVA DE SEGURANÇA 2 ---
+                if acao.ja_aconteceu:
+                    messages.error(request, 'Você não pode remover voluntários de uma ação que já foi realizada.')
+                    return redirect('acoes:acao_manage', pk=pk)
+                # ----------------------------
+
+                # Vamos usar o status CANCELADO ou REJEITADO. Usarei CANCELADO para diferenciar.
+                inscricao.status = 'CANCELADO'
+                inscricao.save()
+                messages.warning(request, f'{inscricao.voluntario.username} foi removido da ação.')
+                
+                # Notificar o voluntário
                 Notificacao.objects.create(
                     destinatario=inscricao.voluntario,
-                    mensagem=f"Sua inscrição para '{acao.titulo}' foi {status_display}.",
-                    link=reverse('acoes:acao_detail', args=[acao.pk]) # Link para a página da ação
+                    mensagem=f"Você foi removido da ação '{acao.titulo}' pelo organizador.",
+                    link=reverse('acoes:acao_detail', args=[acao.pk])
                 )
+
+            elif novo_status in ['ACEITO', 'REJEITADO']:
+                # --- TRAVA DE SEGURANÇA 3 (Opcional, mas recomendada) ---
+                # Impede aceitar gente nova em ação velha
+                if acao.ja_aconteceu:
+                    messages.error(request, 'Esta ação já foi concluída. Não é possível alterar inscrições.')
+                    return redirect('acoes:acao_manage', pk=pk)
+            
+                # Se for aceitar, verifica se ainda há vagas
+                if novo_status == 'ACEITO' and acao.esta_cheia:
+                    messages.warning(request, 'Não foi possível aceitar. As vagas estão preenchidas.')
+                else:
+                    inscricao.status = novo_status
+                    inscricao.save()
+                    status_display = "Aceita" if novo_status == 'ACEITO' else "Rejeitada"
+                    messages.success(request, f'Solicitação de {inscricao.voluntario.username} foi atualizada.')
+
+                    # --- Criar Notificação para o Voluntário ---
+                    Notificacao.objects.create(
+                        destinatario=inscricao.voluntario,
+                        mensagem=f"Sua inscrição para '{acao.titulo}' foi {status_display}.",
+                        link=reverse('acoes:acao_detail', args=[acao.pk]) # Link para a página da ação
+                    )
                 
         except Inscricao.DoesNotExist:
             messages.error(request, 'Solicitação não encontrada.')
@@ -427,32 +485,107 @@ def perfil_view(request):
 
 @login_required
 def historico_view(request):
-    """ 
-    Mostra ações PASSADAS.
-    Se organizador: Ações que ele criou e já acabaram.
-    Se voluntário: Ações que ele participou e já acabaram.
-    """
     hoje = timezone.now()
     
     is_organizador = request.user.groups.filter(name='Organizadores').exists()
+
+    # --- Lógica de Salvar Comentário ---
+    if request.method == 'POST':
+        # --- CENÁRIO A: Organizador salvando notas na Ação ---
+        if 'acao_id' in request.POST and is_organizador:
+            acao_id = request.POST.get('acao_id')
+            notas = request.POST.get('notas_organizador')
+            # Garante que a ação pertence ao usuário logado
+            acao = get_object_or_404(Acao, pk=acao_id, organizador=request.user)
+            acao.notas_organizador = notas
+            acao.save()
+            messages.success(request, 'Suas notas sobre a ação foram salvas.')
+            
+        # --- CENÁRIO B: Voluntário salvando comentário na Inscrição ---
+        elif 'inscricao_id' in request.POST:
+            inscricao_id = request.POST.get('inscricao_id')
+            comentario_texto = request.POST.get('comentario')
+            inscricao = get_object_or_404(Inscricao, id=inscricao_id, voluntario=request.user)
+            inscricao.comentario = comentario_texto
+            inscricao.save()
+            messages.success(request, 'Seu comentário foi salvo!')
+        return redirect('acoes:historico')
+    
+    # --- Lógica de Exibição (GET) ---
+    
+    # 1. Histórico de PARTICIPAÇÃO (Todo mundo tem, inclusive organizadores)
+    qs_participacao = Inscricao.objects.filter(
+        voluntario=request.user, 
+        status__in=['ACEITO', 'CANCELADO'], 
+        acao__data__lt=hoje
+    )
+    # Aplica filtros
+    qs_participacao = filtrar_acoes_queryset(request, qs_participacao)
+    historico_participacoes = qs_participacao.order_by('-acao__data')
+
+    # 2. Histórico de ORGANIZAÇÃO (Apenas se for organizador)
+    historico_organizadas = None
     
     if is_organizador:
-        # Ações criadas pelo user que já passaram da data
-        acoes = Acao.objects.filter(organizador=request.user, data__lt=hoje).order_by('-data')
-        titulo = "Histórico de Ações Organizadas"
-    else:
-        # Ações que o user se inscreveu (ACEITO) e já passaram da data
-        inscricoes = Inscricao.objects.filter(
-            voluntario=request.user, 
-            status='ACEITO', 
-            acao__data__lt=hoje
-        ).order_by('-acao__data')
-        # Extrai apenas as ações dessas inscrições
-        acoes = [i.acao for i in inscricoes]
-        titulo = "Histórico de Participações"
+        qs_organizacao = Acao.objects.filter(organizador=request.user, data__lt=hoje)
+        # Aplica filtros
+        qs_organizacao = filtrar_acoes_queryset(request, qs_organizacao)
+        historico_organizadas = qs_organizacao.order_by('-data')
 
     context = {
-        'acoes': acoes,
-        'titulo_historico': titulo
+        'historico_participacoes': historico_participacoes,
+        'historico_organizadas': historico_organizadas, # Será None se não for organizador
+        'is_organizador': is_organizador,
+        'titulo_historico': "Meu Histórico",
+        'categorias_choices': Acao.CATEGORIA_CHOICES,
+        'filter_values': request.GET 
     }
     return render(request, 'acoes/historico.html', context)
+
+
+@login_required
+def inscricao_cancel(request, pk):
+    """ Permite ao voluntário cancelar sua própria inscrição. """
+    # Busca a inscrição onde o usuário logado é o voluntário
+    inscricao = get_object_or_404(Inscricao, pk=pk, voluntario=request.user)
+    acao = inscricao.acao
+
+    # --- TRAVA DE SEGURANÇA 1 ---
+    if acao.ja_aconteceu:
+        messages.error(request, 'Não é possível cancelar a inscrição em uma ação que já aconteceu.')
+        return redirect('acoes:minhas_inscricoes')
+    # ----------------------------
+
+    status_anterior = inscricao.status
+    
+    if request.method == 'POST':
+        # Altera status para CANCELADO
+        inscricao.status = 'CANCELADO'
+        inscricao.save()
+        
+        messages.success(request, f"Sua inscrição em '{acao.titulo}' foi cancelada.")
+        
+        # 1. Notificar Organizador
+        Notificacao.objects.create(
+            destinatario=acao.organizador,
+            mensagem=f"{request.user.username} cancelou a inscrição na ação '{acao.titulo}'.",
+            link=reverse('acoes:acao_manage', args=[acao.pk])
+        )
+        
+        # 2. Remover notificação pendente do organizador (Se o voluntário não tinha sido aceito ainda)
+        if status_anterior == 'PENDENTE':
+            # Tenta encontrar notificações não lidas para o organizador sobre essa ação
+            # Como a mensagem é dinâmica, buscamos pelo link ou parte da mensagem
+            # A estratégia mais segura pelo link da ação_manage:
+            link_alvo = reverse('acoes:acao_manage', args=[acao.pk])
+            
+            # Deleta notificações não lidas do organizador que tenham esse link 
+            # E que contenham o nome do usuário na mensagem (para não apagar notif de outros users)
+            Notificacao.objects.filter(
+                destinatario=acao.organizador,
+                lida=False,
+                link=link_alvo,
+                mensagem__contains=request.user.username
+            ).delete()
+
+    return redirect('acoes:minhas_inscricoes')

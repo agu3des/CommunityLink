@@ -26,13 +26,19 @@
                             Data da Ação: <span class="item-date">{{ inscricao.acao.data|date:"d/m/Y H:i" }}</span>
                         </p>
                     </div>
-                    <div class="mt-4 md:mt-0">
-                        <span class="inline-block badge
-                            {% if inscricao.status == 'ACEITO' %} bg-green-100 text-green-800
-                            {% elif inscricao.status == 'PENDENTE' %} bg-yellow-100 text-yellow-800
-                            {% else %} bg-red-100 text-red-800 {% endif %}">
-                            {{ inscricao.get_status_display }}
-                        </span>
+                    <div class="mt-4 md:mt-0 flex flex-col items-end gap-2">
+                        <span class="badge ...">{{ inscricao.get_status_display }}</span>
+                        
+                        {% if inscricao.status != 'CANCELADO' and inscricao.status != 'REJEITADO' and not inscricao.acao.ja_aconteceu %}
+                            <form action="{% url 'acoes:inscricao_cancel' inscricao.id %}" method="POST" onsubmit="return confirm('Tem certeza que deseja cancelar sua inscrição?');">
+                                {% csrf_token %}
+                                <button type="submit" class="text-sm text-red-600 hover:text-red-800 underline">
+                                    Cancelar Inscrição
+                                </button>
+                            </form>
+                            {% elif inscricao.acao.ja_aconteceu %}
+                            <span class="text-xs text-gray-500 italic">Ação concluída</span>
+                        {% endif %}
                     </div>
                 </li>
             {% endfor %}

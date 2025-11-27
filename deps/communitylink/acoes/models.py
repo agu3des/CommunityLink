@@ -1,4 +1,5 @@
 # Importe o modelo de User padrão do Django
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
@@ -39,8 +40,15 @@ class Acao(models.Model):
         related_name='acoes_inscritas', # Assim, podemos fazer: user.acoes_inscritas.all()
         blank=True                   # A ação pode começar sem nenhum voluntário
     )
+
+    notas_organizador = models.TextField(blank=True, null=True, help_text="Notas privadas do organizador sobre a execução da ação.")
     
     # --- Propriedades Úteis (Lógica no Modelo) ---
+
+    @property
+    def ja_aconteceu(self):
+        """ Retorna True se a data da ação é anterior ao momento atual. """
+        return self.data < timezone.now()
     
     @property
     def vagas_preenchidas(self):
@@ -67,6 +75,7 @@ class Inscricao(models.Model):
         ('PENDENTE', 'Pendente'),
         ('ACEITO', 'Aceito'),
         ('REJEITADO', 'Rejeitado'),
+        ('CANCELADO', 'Cancelado'),
     ]
 
     # As duas 'pernas' da relação
@@ -78,6 +87,8 @@ class Inscricao(models.Model):
     
     # Data em que a solicitação foi feita
     data_inscricao = models.DateTimeField(auto_now_add=True)
+
+    comentario = models.TextField(blank=True, null=True)
 
     class Meta:
         # Garante que um usuário não possa se inscrever 2x na mesma ação
