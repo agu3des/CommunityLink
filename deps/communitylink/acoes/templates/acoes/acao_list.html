@@ -3,35 +3,34 @@
 {% block title %}Ações - CommunityLink{% endblock %}
 
 {% block content %}
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Ações Comunitárias</h1>
+    <h1 class="page-title">Ações Comunitárias</h1>
 
     <!-- Inclui o formulário de filtro -->
     {% include 'acoes/_filter_form.html' %}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid-list">
         {% for acao in acoes %}
-            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
-                <div class="p-6">
-                    <span class="text-sm font-semibold text-green-600 bg-green-100 py-1 px-3 rounded-full">{{ acao.get_categoria_display }}</span>
-                    <h2 class="text-2xl font-bold text-gray-800 mt-2 mb-2">{{ acao.titulo }}</h2>
-                    <p class="text-gray-600 mb-4"><strong>Data:</strong> {{ acao.data|date:"d/m/Y H:i" }}</p>
-                    <p class="text-gray-600 mb-4"><strong>Local:</strong> {{ acao.local }}</p>
-                    <p class="text-gray-700 mb-4">{{ acao.descricao|truncatewords:20 }}</p>
-                    
-                    <div class="flex justify-between items-center mt-4">
-                        <a href="{{ acao.get_absolute_url }}" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                            Ver Detalhes
-                        </a>
+            <div class="grid-item third">
+                <article class="card-acao">
+                    <div>
+                        <span class="badge">{{ acao.get_categoria_display }}</span>
+                        <h2 class="card-title">{{ acao.titulo }}</h2>
+                        <p class="muted"><strong>Data:</strong> <span class="item-date">{{ acao.data|date:"d/m/Y H:i" }}</span></p>
+                        <p class="muted"><strong>Local:</strong> <span class="location">{{ acao.local }}</span></p>
+                        <p class="prose">{{ acao.descricao|truncatewords:20 }}</p>
+                    </div>
+                    <div class="actions" style="margin-top:0.75rem; justify-content:space-between; align-items:center;">
+                        <a href="{{ acao.get_absolute_url }}" class="btn btn-primary">Ver Detalhes</a>
                         {% if acao.esta_cheia %}
-                            <span class="font-semibold text-red-500">Vagas Esgotadas</span>
+                            <span class="muted">Vagas Esgotadas</span>
                         {% else %}
-                            <span class="font-semibold text-blue-500">Há vagas!</span>
+                            <span class="muted">Há vagas!</span>
                         {% endif %}
                     </div>
-                </div>
+                </article>
             </div>
         {% empty %}
-            <p class="text-gray-700 col-span-full">Nenhuma ação encontrada.</p>
+            <p class="muted">Nenhuma ação encontrada.</p>
         {% endfor %}
     </div>
 {% endblock %}
