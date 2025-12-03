@@ -1,6 +1,7 @@
 # Importe o modelo de User padrão do Django
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core import validators
 from django.db import models
 from django.urls import reverse
 from django.db.models.signals import post_save
@@ -12,7 +13,9 @@ class Acao(models.Model):
     descricao = models.TextField()
     data = models.DateTimeField() # Armazena data e hora
     local = models.CharField(max_length=255)
-    numero_vagas = models.PositiveIntegerField()
+    numero_vagas = models.PositiveIntegerField(
+        validators=[validators.MinValueValidator(1)]
+    )
 
     # Exemplo de categoria com 'choices'
     CATEGORIA_CHOICES = [
