@@ -29,24 +29,31 @@
     <!-- Botões de Ação -->
     <div style="border-top:1px solid rgba(15,23,42,0.04); padding-top:1rem; margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
         {% if user.is_authenticated %}
-            {% if is_organizador %}
-                <a href="{% url 'acao_update' acao.pk %}" class="btn btn-muted">Editar Ação</a>
-                <a href="{% url 'acao_delete' acao.pk %}" class="btn btn-danger">Deletar Ação</a>
-                <a href="{% url 'acao_manage' acao.pk %}" class="btn btn-muted">Gerenciar Inscrições</a>
+            {% if is_owner %}
+                {% if not acao.ja_aconteceu %}
+                    <a href="{% url 'acoes:acao_update' acao.pk %}" class="btn btn-muted">Editar Ação</a>
+                    <a href="{% url 'acoes:acao_delete' acao.pk %}" class="btn btn-danger">Deletar Ação</a>
+                {% else %}
+                    <span class="py-2 px-4 bg-gray-100 text-gray-500 rounded border border-gray-300 cursor-not-allowed">
+                        Ação Concluída (Edição bloqueada)
+                    </span>
+                {% endif %}
+                
+                <a href="{% url 'acoes:acao_manage' acao.pk %}" class="btn btn-muted">Gerenciar Inscrições</a>
             {% else %}
                 {% if ja_inscrito %}
                     <span class="btn btn-muted">Solicitação Enviada (Status: {{ inscricao_status }})</span>
                 {% elif acao.esta_cheia %}
                     <span class="btn btn-muted">Vagas Esgotadas</span>
                 {% else %}
-                    <form action="{% url 'acao_apply' acao.pk %}" method="POST" style="display:inline-block; margin:0;">
+                    <form action="{% url 'acoes:acao_apply' acao.pk %}" method="POST" style="display:inline-block; margin:0;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary">Quero me Voluntariar!</button>
                     </form>
                 {% endif %}
             {% endif %}
         {% else %}
-            <a href="/admin/login/?next={{ request.path }}" class="btn btn-primary">Faça login para se voluntariar</a>
+            <a href="/acoes/signin/?next={{ request.path }}" class="btn btn-primary">Faça login para se voluntariar</a>
         {% endif %}
     </div>
 

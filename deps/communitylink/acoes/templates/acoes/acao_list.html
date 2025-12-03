@@ -33,4 +33,5 @@
             <p class="muted">Nenhuma ação encontrada.</p>
         {% endfor %}
     </div>
+    {% include 'acoes/_pagination.html' with page_obj=acoes %}
 {% endblock %}
