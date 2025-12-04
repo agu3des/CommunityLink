@@ -11,24 +11,19 @@ C:\Users\Angelica\Documents\GitHub\CommunityLink\deps\communitylink\
 ### 2️⃣ Rode Este Comando:
 
 ```bash
-docker-compose run --rm tests-basic
+docker-compose run --rm tests
 ```
 
 ### 3️⃣ O que Vai Acontecer?
 
 ```
-✅ 37 testes vão rodar (models + forms)
-⏱️  Leva ~5-10 segundos
+✅ 223 testes vão rodar 
 📊 Mostra quantos passaram/falharam
 ```
 
 ### 4️⃣ Se Todos Passarem ✅
 
-**Parabéns!** Sua lógica de negócio está correta:
-- ✅ Modelos funcionando
-- ✅ Validações OK
-- ✅ Relacionamentos OK
-- ✅ Formulários validando
+**Parabéns!** Sua lógica de negócio está correta!
 
 ### 5️⃣ Se Algum Falhar ❌
 
@@ -37,20 +32,3 @@ docker-compose run --rm tests-basic
 2. Container não rodando → rode: `docker-compose up -d web`
 3. Bug real no código → analise a mensagem de erro
 
----
-
-## 🔥 Comando Único
-
-```bash
-docker-compose run --rm tests-basic
-```
-
-**Isso é tudo!** 🎉
-
----
-
-## 📚 Quer Mais Detalhes?
-
-- **Docker**: Veja `TESTES_DOCKER.md`
-- **Geral**: Veja `COMO_RODAR_TESTES.md`
-- **Detalhes dos Testes**: Veja `acoes/tests/README_TESTES.md`
