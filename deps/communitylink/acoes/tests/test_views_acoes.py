@@ -32,7 +32,7 @@ class TestAcaoListView:
         CT-V001.1: Lista de ações acessível sem autenticação
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_list')
+        url = reverse('acoes:acao_list')
         response = client.get(url)
         assert response.status_code == 200
 
@@ -41,7 +41,7 @@ class TestAcaoListView:
         CT-V001.2: Lista mostra apenas ações com data >= hoje
         Resultado Esperado: Ação passada não aparece na lista
         """
-        url = reverse('acao_list')
+        url = reverse('acoes:acao_list')
         response = client.get(url)
 
         acoes = response.context['acoes']
@@ -79,7 +79,7 @@ class TestAcaoListView:
             organizador=organizador_user
         )
 
-        url = reverse('acao_list')
+        url = reverse('acoes:acao_list')
         response = client.get(url)
         acoes = list(response.context['acoes'])
 
@@ -112,7 +112,7 @@ class TestAcaoListView:
             organizador=organizador_user
         )
 
-        url = reverse('acao_list') + '?categoria=SAUDE'
+        url = reverse('acoes:acao_list') + '?categoria=SAUDE'
         response = client.get(url)
         acoes = response.context['acoes']
 
@@ -141,7 +141,7 @@ class TestAcaoListView:
             organizador=organizador_user
         )
 
-        url = reverse('acao_list') + '?local=Paulo'
+        url = reverse('acoes:acao_list') + '?local=Paulo'
         response = client.get(url)
         acoes = response.context['acoes']
 
@@ -160,7 +160,7 @@ class TestAcaoDetailView:
         CT-V010.1: Detalhes de ação acessíveis sem autenticação
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_detail', args=[acao_futura.pk])
+        url = reverse('acoes:acao_detail', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -169,7 +169,7 @@ class TestAcaoDetailView:
         CT-V010.2: Detalhes mostram todas as informações da ação
         Resultado Esperado: Contexto contém a ação completa
         """
-        url = reverse('acao_detail', args=[acao_futura.pk])
+        url = reverse('acoes:acao_detail', args=[acao_futura.pk])
         response = client.get(url)
 
         assert response.context['acao'] == acao_futura
@@ -185,7 +185,7 @@ class TestAcaoDetailView:
         # Cria inscrição
         Inscricao.objects.create(acao=acao_futura, voluntario=voluntario_user)
 
-        url = reverse('acao_detail', args=[acao_futura.pk])
+        url = reverse('acoes:acao_detail', args=[acao_futura.pk])
         response = client_logged_voluntario.get(url)
 
         assert response.context['ja_inscrito'] is True
@@ -195,7 +195,7 @@ class TestAcaoDetailView:
         CT-V010.4: Indica se usuário logado é o organizador
         Resultado Esperado: is_organizador=True para organizador da ação
         """
-        url = reverse('acao_detail', args=[acao_futura.pk])
+        url = reverse('acoes:acao_detail', args=[acao_futura.pk])
         response = client_logged_organizador.get(url)
 
         assert response.context['is_organizador'] is True
@@ -212,7 +212,7 @@ class TestAcaoCreateView:
         CT-V020.1: Criação de ação requer autenticação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client.get(url)
         assert response.status_code == 302  # Redirect
 
@@ -221,7 +221,7 @@ class TestAcaoCreateView:
         CT-V020.2: Voluntário (não-organizador) não pode criar ação
         Resultado Esperado: Mensagem de erro e redirect
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client_logged_voluntario.get(url)
 
         # Deve redirecionar para a lista de ações
@@ -232,7 +232,7 @@ class TestAcaoCreateView:
         CT-V020.3: Organizador pode acessar formulário de criação
         Resultado Esperado: Status 200 e form no contexto
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client_logged_organizador.get(url)
 
         assert response.status_code == 200
@@ -243,7 +243,7 @@ class TestAcaoCreateView:
         CT-V021: Criar ação com dados válidos
         Resultado Esperado: Ação criada no banco e redirect
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         data = {
             'titulo': 'Nova Ação',
             'descricao': 'Descrição da nova ação',
@@ -265,7 +265,7 @@ class TestAcaoCreateView:
         CT-V022: Não é possível criar ação com data no passado
         Resultado Esperado: Erro de validação
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         data = {
             'titulo': 'Ação Passada',
             'descricao': 'Teste',
@@ -289,7 +289,7 @@ class TestAcaoCreateView:
         Resultado Esperado: Ação criada com sucesso
         """
         client.force_login(superuser)
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
 
         data = {
             'titulo': 'Ação Admin',
@@ -315,7 +315,7 @@ class TestAcaoUpdateView:
         CT-V030.1: Edição requer autenticação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 302
 
@@ -324,7 +324,7 @@ class TestAcaoUpdateView:
         CT-V030.2: Apenas organizador da ação pode editá-la
         Resultado Esperado: Mensagem de erro e redirect
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client_logged_voluntario.get(url)
 
         assert response.status_code == 302
@@ -334,7 +334,7 @@ class TestAcaoUpdateView:
         CT-V030.3: Organizador pode editar sua própria ação
         Resultado Esperado: Form preenchido com dados da ação
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client_logged_organizador.get(url)
 
         assert response.status_code == 200
@@ -345,7 +345,7 @@ class TestAcaoUpdateView:
         CT-V031: Atualizar ação com dados válidos
         Resultado Esperado: Ação atualizada no banco
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         data = {
             'titulo': 'Título Atualizado',
             'descricao': acao_futura.descricao,
@@ -366,7 +366,7 @@ class TestAcaoUpdateView:
         Resultado Esperado: Edição permitida
         """
         client.force_login(superuser)
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client.get(url)
 
         assert response.status_code == 200
@@ -383,7 +383,7 @@ class TestAcaoDeleteView:
         CT-V040.1: Exclusão requer autenticação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 302
 
@@ -392,7 +392,7 @@ class TestAcaoDeleteView:
         CT-V040.2: Apenas organizador pode deletar a ação
         Resultado Esperado: Mensagem de erro e redirect
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         response = client_logged_voluntario.post(url)
 
         assert response.status_code == 302
@@ -403,7 +403,7 @@ class TestAcaoDeleteView:
         CT-V040.3: Organizador pode deletar sua própria ação
         Resultado Esperado: Ação removida do banco
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         acao_pk = acao_futura.pk
 
         response = client_logged_organizador.post(url)
@@ -415,7 +415,7 @@ class TestAcaoDeleteView:
         CT-V041: GET na view de deleção exibe página de confirmação
         Resultado Esperado: Página de confirmação renderizada
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         response = client_logged_organizador.get(url)
 
         assert response.status_code == 200
@@ -433,7 +433,7 @@ class TestMinhasAcoesView:
         CT-V050.1: View requer autenticação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('minhas_acoes')
+        url = reverse('acoes:minhas_acoes')
         response = client.get(url)
         assert response.status_code == 302
 
@@ -454,7 +454,7 @@ class TestMinhasAcoesView:
             organizador=outro_org
         )
 
-        url = reverse('minhas_acoes')
+        url = reverse('acoes:minhas_acoes')
         response = client_logged_organizador.get(url)
         acoes = response.context['acoes']
 

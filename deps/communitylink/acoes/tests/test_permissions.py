@@ -14,7 +14,7 @@ from acoes.models import Acao, Inscricao
 
 
 # ============================================
-# SPRINT 1 - Permissões
+# SPRINT 2 - Permissões
 # ============================================
 
 
@@ -30,7 +30,7 @@ class TestPermissoesOrganizador:
         CT-P001.1: Organizador tem acesso à criação de ações
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client_logged_organizador.get(url)
         assert response.status_code == 200
 
@@ -39,7 +39,7 @@ class TestPermissoesOrganizador:
         CT-P001.2: Organizador pode editar ações que criou
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client_logged_organizador.get(url)
         assert response.status_code == 200
 
@@ -48,7 +48,7 @@ class TestPermissoesOrganizador:
         CT-P001.3: Organizador pode deletar ações que criou
         Resultado Esperado: Status 200 na confirmação
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         response = client_logged_organizador.get(url)
         assert response.status_code == 200
 
@@ -57,7 +57,7 @@ class TestPermissoesOrganizador:
         CT-P001.4: Organizador pode gerenciar inscrições de suas ações
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_manage', args=[acao_futura.pk])
+        url = reverse('acoes:acao_manage', args=[acao_futura.pk])
         response = client_logged_organizador.get(url)
         assert response.status_code == 200
 
@@ -80,7 +80,7 @@ class TestPermissoesOrganizador:
             organizador=outro_org
         )
 
-        url = reverse('acao_update', args=[acao_outro.pk])
+        url = reverse('acoes:acao_update', args=[acao_outro.pk])
         response = client_logged_organizador.get(url)
 
         # Deve redirecionar (não tem permissão)
@@ -104,7 +104,7 @@ class TestPermissoesOrganizador:
             organizador=outro_org
         )
 
-        url = reverse('acao_delete', args=[acao_outro.pk])
+        url = reverse('acoes:acao_delete', args=[acao_outro.pk])
         response = client_logged_organizador.post(url)
 
         # Deve redirecionar e ação deve continuar existindo
@@ -129,7 +129,7 @@ class TestPermissoesOrganizador:
             organizador=outro_org
         )
 
-        url = reverse('acao_manage', args=[acao_outro.pk])
+        url = reverse('acoes:acao_manage', args=[acao_outro.pk])
         response = client_logged_organizador.get(url)
 
         assert response.status_code == 302
@@ -146,7 +146,7 @@ class TestPermissoesVoluntario:
         CT-P010.1: Voluntário NÃO pode criar ações
         Resultado Esperado: Redirect com mensagem de erro
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client_logged_voluntario.get(url)
         assert response.status_code == 302
 
@@ -155,7 +155,7 @@ class TestPermissoesVoluntario:
         CT-P010.2: Voluntário NÃO pode editar ações
         Resultado Esperado: Redirect
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client_logged_voluntario.get(url)
         assert response.status_code == 302
 
@@ -164,7 +164,7 @@ class TestPermissoesVoluntario:
         CT-P010.3: Voluntário NÃO pode deletar ações
         Resultado Esperado: Redirect e ação permanece
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         response = client_logged_voluntario.post(url)
 
         assert response.status_code == 302
@@ -175,7 +175,7 @@ class TestPermissoesVoluntario:
         CT-P010.4: Voluntário NÃO pode gerenciar inscrições
         Resultado Esperado: Redirect
         """
-        url = reverse('acao_manage', args=[acao_futura.pk])
+        url = reverse('acoes:acao_manage', args=[acao_futura.pk])
         response = client_logged_voluntario.get(url)
         assert response.status_code == 302
 
@@ -184,7 +184,7 @@ class TestPermissoesVoluntario:
         CT-P011: Voluntário PODE se inscrever em ações
         Resultado Esperado: Inscrição criada
         """
-        url = reverse('acao_apply', args=[acao_futura.pk])
+        url = reverse('acoes:acao_apply', args=[acao_futura.pk])
         response = client_logged_voluntario.post(url)
 
         assert Inscricao.objects.filter(acao=acao_futura, voluntario=voluntario_user).exists()
@@ -194,7 +194,7 @@ class TestPermissoesVoluntario:
         CT-P012: Voluntário pode ver lista de ações
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_list')
+        url = reverse('acoes:acao_list')
         response = client_logged_voluntario.get(url)
         assert response.status_code == 200
 
@@ -203,7 +203,7 @@ class TestPermissoesVoluntario:
         CT-P013: Voluntário pode ver detalhes de ação
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_detail', args=[acao_futura.pk])
+        url = reverse('acoes:acao_detail', args=[acao_futura.pk])
         response = client_logged_voluntario.get(url)
         assert response.status_code == 200
 
@@ -212,7 +212,7 @@ class TestPermissoesVoluntario:
         CT-P014: Voluntário pode ver suas inscrições
         Resultado Esperado: Status 200
         """
-        url = reverse('minhas_inscricoes')
+        url = reverse('acoes:minhas_inscricoes')
         response = client_logged_voluntario.get(url)
         assert response.status_code == 200
 
@@ -229,7 +229,7 @@ class TestPermissoesSuperuser:
         Resultado Esperado: Status 200
         """
         client.force_login(superuser)
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client.get(url)
         assert response.status_code == 200
 
@@ -239,7 +239,7 @@ class TestPermissoesSuperuser:
         Resultado Esperado: Status 200
         """
         client.force_login(superuser)
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -249,7 +249,7 @@ class TestPermissoesSuperuser:
         Resultado Esperado: Ação deletada
         """
         client.force_login(superuser)
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         acao_pk = acao_futura.pk
 
         response = client.post(url)
@@ -262,7 +262,7 @@ class TestPermissoesSuperuser:
         Resultado Esperado: Status 200
         """
         client.force_login(superuser)
-        url = reverse('acao_manage', args=[acao_futura.pk])
+        url = reverse('acoes:acao_manage', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -278,7 +278,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.1: Usuário anônimo pode ver lista de ações
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_list')
+        url = reverse('acoes:acao_list')
         response = client.get(url)
         assert response.status_code == 200
 
@@ -287,7 +287,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.2: Usuário anônimo pode ver detalhes de ação
         Resultado Esperado: Status 200
         """
-        url = reverse('acao_detail', args=[acao_futura.pk])
+        url = reverse('acoes:acao_detail', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 200
 
@@ -296,7 +296,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.3: Usuário anônimo NÃO pode criar ação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_create')
+        url = reverse('acoes:acao_create')
         response = client.get(url)
         assert response.status_code == 302
         assert '/login' in response.url or 'next=' in response.url
@@ -306,7 +306,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.4: Usuário anônimo NÃO pode editar ação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_update', args=[acao_futura.pk])
+        url = reverse('acoes:acao_update', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 302
 
@@ -315,7 +315,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.5: Usuário anônimo NÃO pode deletar ação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_delete', args=[acao_futura.pk])
+        url = reverse('acoes:acao_delete', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 302
 
@@ -324,7 +324,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.6: Usuário anônimo NÃO pode se inscrever
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_apply', args=[acao_futura.pk])
+        url = reverse('acoes:acao_apply', args=[acao_futura.pk])
         response = client.post(url)
         assert response.status_code == 302
 
@@ -333,7 +333,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.7: Usuário anônimo NÃO pode gerenciar ação
         Resultado Esperado: Redirect para login
         """
-        url = reverse('acao_manage', args=[acao_futura.pk])
+        url = reverse('acoes:acao_manage', args=[acao_futura.pk])
         response = client.get(url)
         assert response.status_code == 302
 
@@ -342,7 +342,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.8: Usuário anônimo NÃO pode ver "minhas inscrições"
         Resultado Esperado: Redirect para login
         """
-        url = reverse('minhas_inscricoes')
+        url = reverse('acoes:minhas_inscricoes')
         response = client.get(url)
         assert response.status_code == 302
 
@@ -351,7 +351,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.9: Usuário anônimo NÃO pode ver "minhas ações"
         Resultado Esperado: Redirect para login
         """
-        url = reverse('minhas_acoes')
+        url = reverse('acoes:minhas_acoes')
         response = client.get(url)
         assert response.status_code == 302
 
@@ -360,7 +360,7 @@ class TestPermissoesUsuarioAnonimo:
         CT-P030.10: Usuário anônimo NÃO pode ver notificações
         Resultado Esperado: Redirect para login
         """
-        url = reverse('notificacoes_list')
+        url = reverse('acoes:notificacoes_list')
         response = client.get(url)
         assert response.status_code == 302
 
@@ -376,7 +376,7 @@ class TestPermissoesEspeciais:
         CT-P040.1: Organizador NÃO pode se inscrever na própria ação
         Resultado Esperado: Inscrição não criada, mensagem de aviso
         """
-        url = reverse('acao_apply', args=[acao_futura.pk])
+        url = reverse('acoes:acao_apply', args=[acao_futura.pk])
         response = client_logged_organizador.post(url)
 
         assert not Inscricao.objects.filter(acao=acao_futura, voluntario=organizador_user).exists()
@@ -393,7 +393,7 @@ class TestPermissoesEspeciais:
         outro_vol = User.objects.create_user('outro_vol', 'outro@test.com', 'pass')
         Inscricao.objects.create(acao=acao_futura, voluntario=outro_vol)
 
-        url = reverse('minhas_inscricoes')
+        url = reverse('acoes:minhas_inscricoes')
         response = client_logged_voluntario.get(url)
         inscricoes = response.context['inscricoes']
 
@@ -423,7 +423,7 @@ class TestPermissoesEspeciais:
             organizador=outro_org
         )
 
-        url = reverse('minhas_acoes')
+        url = reverse('acoes:minhas_acoes')
         response = client_logged_organizador.get(url)
         acoes = response.context['acoes']
 
@@ -450,7 +450,7 @@ class TestPermissoesEspeciais:
             mensagem='Para organizador'
         )
 
-        url = reverse('notificacoes_list')
+        url = reverse('acoes:notificacoes_list')
         response = client_logged_voluntario.get(url)
         notificacoes = response.context['notificacoes']
 
