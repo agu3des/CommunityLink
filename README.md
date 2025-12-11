@@ -1,8 +1,5 @@
 ## CommunityLink – Sistema de Voluntariado para Ações Comunitárias  
 
-## Dev: 
-Ananda Guedes
-
 ## Objetivo do Projeto:
 Um Sistema de Voluntariado para Ações Comunitárias, o objetivo seria criar uma plataforma que facilite o engajamento de voluntários em atividades sociais e ambientais, oferecendo ferramentas para cadastrar ações, conectar-se com organizadores e acompanhar o impacto das atividades. 
 

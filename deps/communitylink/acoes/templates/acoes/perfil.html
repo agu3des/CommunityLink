@@ -1,59 +1,69 @@
 {% extends 'acoes/base.html' %}
+{% load static %}
 
 {% block title %}Meu Perfil{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Meu Perfil</h1>
-        <a href="{% url 'acoes:historico' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
-            Ver meu Histórico de Ações
-        </a>
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Meu Perfil</h1>
+        <a href="{% url 'acoes:historico' %}" class="btn btn-muted">Ver Histórico de Ações</a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-xl p-8">
+    <div class="profile-content">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Dados da Conta</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    {{ u_form.first_name.label_tag }}
-                    {{ u_form.first_name }}
-                </div>
-                <div>
-                    {{ u_form.last_name.label_tag }}
-                    {{ u_form.last_name }}
-                </div>
-                <div class="md:col-span-2">
-                    {{ u_form.email.label_tag }}
-                    {{ u_form.email }}
-                </div>
-            </div>
-
-            <h2 class="text-xl font-semibold text-gray-700 mb-4 border-b pb-2 mt-8">Detalhes Pessoais</h2>
-            
-            <div class="mb-6">
-                {{ p_form.endereco.label_tag }}
-                {{ p_form.endereco }}
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Preferências de Causas</label>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {% for checkbox in p_form.preferencias %}
-                    <div class="flex items-center">
-                        {{ checkbox.tag }}
-                        <span class="ml-2 text-gray-700">{{ checkbox.choice_label }}</span>
+            <!-- Dados da Conta -->
+            <div class="profile-section">
+                <h2>Dados da Conta</h2>
+                <div class="profile-form">
+                    <div class="profile-form-row">
+                        {{ u_form.first_name.label_tag }}
+                        {{ u_form.first_name }}
                     </div>
-                    {% endfor %}
+                    <div class="profile-form-row">
+                        {{ u_form.last_name.label_tag }}
+                        {{ u_form.last_name }}
+                    </div>
+                    <div class="profile-form-row">
+                        {{ u_form.email.label_tag }}
+                        {{ u_form.email }}
+                    </div>
                 </div>
             </div>
 
-            <div class="flex justify-end mt-8">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow transition">
-                    Salvar Alterações
-                </button>
+            <!-- Detalhes Pessoais -->
+            <div class="profile-section">
+                <h2>Detalhes Pessoais</h2>
+                <div class="profile-form">
+                    <div class="profile-form-row">
+                        {{ p_form.endereco.label_tag }}
+                        {{ p_form.endereco }}
+                    </div>
+
+                    <div class="profile-form-row">
+                        <label>Preferências de Causas</label>
+                        <div class="checkbox-group">
+                            {% for checkbox in p_form.preferencias %}
+                            <div class="checkbox-item">
+                                {{ checkbox.tag }}
+                                <label for="{{ checkbox.id_for_label }}">
+                                    {{ checkbox.choice_label }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
             </div>
         </form>
     </div>

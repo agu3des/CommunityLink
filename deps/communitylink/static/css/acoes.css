@@ -1,0 +1,389 @@
+/* =========================================
+   VARIAVEIS GLOBAIS
+   ========================================= */
+:root {
+    /* Cores do Tema */
+    --accent: #1f9d55;
+    --accent-600: #15803d;
+    --text-main: #111827;
+    --muted: #6b7280;
+    --danger: #dc2626;
+    
+    /* Fundos */
+    --bg-gray: #f3f4f6;
+    --bg-white: #ffffff;
+}
+
+/* =========================================
+   ELEMENTOS GERAIS E UTILITÁRIOS
+   ========================================= */
+
+/* --- BOTÕES (Estilo Base) --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    line-height: 1.25;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+.btn-primary:hover {
+    background-color: var(--accent-600);
+    border-color: var(--accent-600);
+}
+
+.btn-muted {
+    background-color: #f3f4f6;
+    color: var(--text-main);
+    border-color: #d1d5db;
+}
+.btn-muted:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+/* --- BADGES (Etiquetas de Status/Categoria) --- */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    white-space: nowrap;
+}
+
+/* Variações de Cores das Badges */
+.badge-category {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+.badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+.badge-neutral {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+.badge-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* --- HELPERS DE LAYOUT --- */
+.w-full {
+    width: 100% !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* =========================================
+   ESTRUTURA DA PÁGINA
+   ========================================= */
+
+/* Cabeçalho da página (Título + Botão Criar) */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Espaçamento entre seções (Filtro, Grid, Paginação) */
+.section-spacer {
+    margin-bottom: 2rem;
+}
+
+/* Estado Vazio (Quando não há ações) */
+.empty-state {
+    background-color: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--muted);
+    margin: 2rem 0;
+}
+
+.empty-state p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+/* =========================================
+   MÓDULO DE AÇÕES (Seu CSS Original)
+   ========================================= */
+
+/* --- 1. LAYOUT DE LISTAGEM (GRID) --- */
+.action-grid {
+    display: grid;
+    /* Ajuste: 280px permite que os cards se acomodem melhor */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem; 
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.5rem; 
+    padding-bottom: 2rem;
+    align-items: stretch;
+}
+
+/* --- 2. CARD DA AÇÃO --- */
+.action-card {
+    background-color: #ffffff;
+    /* Borda levemente mais visível no estado normal */
+    border: 1px solid rgba(0, 0, 0, 0.08); 
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1; 
+}
+
+.action-card:hover {
+    transform: translateY(-8px); 
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent); 
+    z-index: 10; 
+}
+
+/* Zoom no Hover */
+.action-card:hover .action-image,
+.action-card:hover .action-image-placeholder {
+    transform: scale(1.05);
+}
+
+/* Corpo do Card */
+.action-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; 
+    background-color: #ffffff;
+}
+
+/* Tags (Area das Badges) */
+.action-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Título */
+.action-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.75rem 0;
+    line-height: 1.3;
+}
+
+.action-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.action-title a:hover {
+    color: var(--accent-600);
+}
+
+/* Descrição curta */
+.action-description {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Metadados (Data, Local) */
+.action-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: #374151;
+    margin-bottom: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px dashed rgba(0, 0, 0, 0.08);
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.meta-item svg {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* Rodapé do Card */
+.action-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Espaço entre stats e botões */
+}
+
+.footer-actions {
+    display: flex;
+    gap: 1rem; 
+    margin-top: 0.5rem;
+}
+
+.footer-actions .btn {
+    flex: 1;
+    white-space: nowrap;
+}
+
+/* Elementos internos do Footer (Adicionado para o HTML novo) */
+.footer-stats {
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 0.5rem;
+}
+
+/* Formulários */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-help-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+.field-error {
+    font-size: 0.85rem;
+    color: var(--danger);
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border: 1px dashed #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+input[type="file"]:hover {
+    background: #f3f4f6;
+    border-color: var(--accent);
+}
+
+/* =========================================
+   ESTILOS ADICIONAIS: MINHAS INSCRIÇÕES
+   ========================================= */
+
+/* Subtítulo da página */
+.page-subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+/* Helper para display block no header (quando tem subtítulo) */
+.page-header.block {
+    display: block;
+}
+
+/* Espaçamento pequeno para o form de cancelar */
+.mt-sm {
+    margin-top: 0.75rem;
+}
+
+/* --- BADGES DE STATUS (Cores Específicas) --- */
+
+.badge-status-pendente {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fcd34d;
+}
+
+.badge-status-confirmada {
+    background-color: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.badge-status-cancelada {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+.badge-status-recusada {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+/* --- BOTÃO TIPO LINK (Para Cancelar) --- */
+.btn-link-danger {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    color: var(--danger);
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-link-danger:hover {
+    color: #991b1b; /* Vermelho mais escuro */
+    background-color: #fee2e2; /* Fundo leve ao passar o mouse */
+    border-radius: 6px;
+    text-decoration: none;
+}

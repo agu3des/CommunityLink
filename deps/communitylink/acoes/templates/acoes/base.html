@@ -68,7 +68,7 @@
                         
                             <form method="post" action="{% url 'acoes:logout' %}" style="display:inline;">
                                 {% csrf_token %}
-                                <button type="submit" class="text-sm text-red-500 hover:text-red-700 font-semibold border border-red-200 hover:border-red-400 px-3 py-1 rounded transition" style="cursor: pointer;">
+                                <button type="submit" class="btn-danger hover:text-red-700 font-semibold border border-red-200 hover:border-red-400 px-3 py-1 rounded transition" style="cursor: pointer;">
                                     Sair
                                 </button>
                             </form>

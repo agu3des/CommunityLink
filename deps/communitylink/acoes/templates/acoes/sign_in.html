@@ -1,18 +1,16 @@
+{% extends 'acoes/base.html' %}
 {% load static %}
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <!-- <link rel="stylesheet" href="{% static '' %}"> -->
-  <title>Sign In</title>
-</head>
-<body>
-  <div class="form-container">
+
+{% block title %}Entrar - CommunityLink{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
     <h1>Entrar</h1>
-    <form method="post" novalidate>
+    <form method="post" novalidate class="auth-form">
       {% csrf_token %}
       {% if form.non_field_errors %}
-        <div class="alert alert-error" style="color: red; margin-bottom: 15px; padding: 10px; background-color: #fee2e2; border-radius: 5px;">
+        <div class="alert alert-error">
           {% for error in form.non_field_errors %}
             <p>{{ error }}</p>
           {% endfor %}
@@ -25,15 +23,17 @@
           {{ field.label_tag }}
           {{ field }}
           {% if field.errors %}
-            <div class="error" style="color: red; font-size: 0.875rem;">{{ field.errors.0 }}</div>
+            <div class="error">{{ field.errors.0 }}</div>
           {% endif %}
         </div>
       {% endfor %}
       <div class="form-actions">
-        <button type="submit" class="btn">Entrar</button>
+        <button type="submit" class="btn btn-primary">Entrar</button>
       </div>
     </form>
     <p>Não tem conta? <a href="{% url 'acoes:signup' %}">Cadastre-se</a></p>
   </div>
-</body>
-</html>
+</div>
+
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
