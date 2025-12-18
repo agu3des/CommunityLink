@@ -348,14 +348,3 @@ class TestPerfilView:
         organizador_user.refresh_from_db()
         assert organizador_user.first_name == 'Organizador Atualizado'
         assert organizador_user.perfil.endereco == 'Endereco Org'
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novos recursos
-# ============================================
-
-# Quando adicionar foto de perfil ou outras configurações:
-# @pytest.mark.django_db
-# class TestPerfilFoto:
-#     """CT-PR030: Testes de foto de perfil - Sprint 2"""
-#     pass

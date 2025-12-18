@@ -525,14 +525,3 @@ class TestPerfilUpdateForm:
 
         from django import forms
         assert isinstance(form.fields['preferencias'].widget, forms.CheckboxSelectMultiple)
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novos formulários
-# ============================================
-
-# Quando adicionar outros formulários:
-# @pytest.mark.django_db
-# class TestAvaliacaoForm:
-#     """CT-FA040: Testes de formulário de avaliação - Sprint 2"""
-#     pass

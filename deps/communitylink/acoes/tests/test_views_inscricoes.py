@@ -323,7 +323,7 @@ class TestMinhasInscricoesView:
 
 
 # ============================================
-# SPRINT 1 - Notificações
+# SPRINT 3 - Notificações
 # ============================================
 
 
@@ -894,14 +894,3 @@ class TestInscricaoCancelView:
 
         inscricao.refresh_from_db()
         assert inscricao.status == 'CANCELADO'
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novas funcionalidades
-# ============================================
-
-# Quando adicionar chat ou mensagens diretas:
-# @pytest.mark.django_db
-# class TestChatView:
-#     """CT-V160: Testes de chat - Sprint 2"""
-#     pass
