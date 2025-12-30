@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
+from django.contrib.auth import views as auth_views
 from . import views
 
 app_name = "acoes"
@@ -38,4 +39,34 @@ urlpatterns = [
     # Perfil
     path('perfil/', views.perfil_view, name='perfil'), #Ver/editar perfil
     path('historico/', views.historico_view, name='historico'),
+
+
+   # --- RECUPERAÇÃO DE SENHA (PASSWORD RESET) ---
+    path('password-reset/', 
+         auth_views.PasswordResetView.as_view(
+             template_name='acoes/password_reset.html',
+             email_template_name='acoes/password_reset_email.html',
+             subject_template_name='acoes/password_reset_subject.txt',
+             success_url=reverse_lazy('acoes:password_reset_done') # CORREÇÃO AQUI
+         ),
+         name='password_reset'),
+
+    path('password-reset/done/', 
+         auth_views.PasswordResetDoneView.as_view(
+             template_name='acoes/password_reset_done.html'
+         ),
+         name='password_reset_done'),
+
+    path('password-reset-confirm/<uidb64>/<token>/', 
+         auth_views.PasswordResetConfirmView.as_view(
+             template_name='acoes/password_reset_confirm.html',
+             success_url=reverse_lazy('acoes:password_reset_complete') # CORREÇÃO AQUI
+         ),
+         name='password_reset_confirm'),
+
+    path('password-reset-complete/', 
+         auth_views.PasswordResetCompleteView.as_view(
+             template_name='acoes/password_reset_complete.html'
+         ),
+         name='password_reset_complete'),
 ]
