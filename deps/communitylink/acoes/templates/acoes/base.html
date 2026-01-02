@@ -5,107 +5,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CommunityLink{% endblock %}</title>
+    
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
 
     <nav class="site-nav">
         <div class="container">
             <div class="nav-row">
+                
                 <div class="nav-left">
-                    <div>
-                        <!-- Logo -->
-                        <a href="{% url 'acoes:acao_list' %}" class="brand">
-                            <span class="brand-text">CommunityLink</span>
-                        </a>
-                    </div>
-                    <!-- Links da Nav Esquerda -->
+                    <a href="{% url 'acoes:acao_list' %}" class="brand">
+                        <span class="brand-text">CommunityLink</span>
+                    </a>
+
                     <div class="nav-links">
-                        <a href="{% url 'acoes:acao_list' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Ações</a>
+                        <a href="{% url 'acoes:acao_list' %}" class="nav-item">Ações</a>
                         
                         {% if user.is_authenticated %}
-                            <!-- Link de Criar Ação -->
-                            <!-- Links SÓ para Organizadores OU Superusuários -->
                             {% if is_organizador or user.is_superuser %}
-                            <a href="{% url 'acoes:acao_create' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Criar Ação</a>
-                            <a href="{% url 'acoes:minhas_acoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Ações</a>
+                                <a href="{% url 'acoes:acao_create' %}" class="nav-item">Criar Ação</a>
+                                <a href="{% url 'acoes:minhas_acoes' %}" class="nav-item">Minhas Ações</a>
                             {% endif %}
-
-                            <!-- MUDANÇA AQUI: Novo Link -->
-                            <a href="{% url 'acoes:minhas_inscricoes' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Minhas Inscrições</a>
-
-                            
+                            <a href="{% url 'acoes:minhas_inscricoes' %}" class="nav-item">Minhas Inscrições</a>
                         {% endif %}
-
                     </div>
                 </div>
-                <!-- Links da Nav Direita -->
+
                 <div class="nav-right">
                     {% if user.is_authenticated %}
 
-                        <!-- --- Link de Notificações --- -->
-                        <a href="{% url 'acoes:notificacoes_list' %}" class="relative p-2 text-gray-600 hover:text-gray-800">
-                            <!-- Ícone de Sino (SVG) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <a href="{% url 'acoes:notificacoes_list' %}" class="nav-icon-link" title="Notificações">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="nav-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341A6.002 6.002 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                            <!-- Contador de Notificações -->
+                            
                             {% if unread_notification_count > 0 %}
-                            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                                {{ unread_notification_count }}
-                            </span>
+                                <span class="badge-notification">
+                                    {{ unread_notification_count }}
+                                </span>
                             {% endif %}
                         </a>
 
-                        <!-- Saudação e Logout -->
-                        <div class="flex items-center gap-4" style="display: inline-flex; align-items: center; gap: 1rem;">
-                            <a href="{% url 'acoes:perfil' %}" class="flex items-center gap-2 py-2 px-2 text-gray-600 hover:text-green-600 transition group" style="display: flex; align-items: center; gap: 0.5rem;">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-hover:text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
+                        <div class="nav-divider"></div>
+
+                        <div class="nav-user-area">
+                            <a href="{% url 'acoes:perfil' %}" class="nav-user-link">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="nav-svg-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                <span class="font-medium">Olá, {{ request.user.username }}</span>
+                                <span class="user-greeting">Olá, {{ request.user.username }}</span>
                             </a>
                         
-                            <form method="post" action="{% url 'acoes:logout' %}" style="display:inline;">
+                            <form method="post" action="{% url 'acoes:logout' %}" class="logout-form">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-danger hover:text-red-700 font-semibold border border-red-200 hover:border-red-400 px-3 py-1 rounded transition" style="cursor: pointer;">
+                                <button type="submit" class="btn btn-sm btn-danger-outline">
                                     Sair
                                 </button>
                             </form>
                         </div>
-                        
 
-                        {% else %}
-                            <a href="{% url 'acoes:signin' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Entrar</a>
-                            <a href="{% url 'acoes:signup' %}" class="py-4 px-2 text-gray-700 hover:text-green-600 font-semibold">Cadastrar</a>
+                    {% else %}
+                        <div class="nav-auth-links">
+                            <a href="{% url 'acoes:signin' %}" class="btn btn-sm btn-text">Entrar</a>
+                            <a href="{% url 'acoes:signup' %}" class="btn btn-sm btn-primary">Cadastrar</a>
+                        </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Conteúdo da Página -->
-    <main class="max-w-6xl mx-auto p-6">
-        <!-- Bloco para Mensagens (opcional, mas bom) -->
+    <main class="main-container container">
+        
         {% if messages %}
-            <div class="mb-4">
+            <div class="messages-area">
                 {% for message in messages %}
-                    <div class="p-4 rounded-md 
-                        {% if message.tags == 'success' %} bg-green-100 text-green-800
-                        {% elif message.tags == 'error' %} bg-red-100 text-red-800
-                        {% else %} bg-blue-100 text-blue-800 {% endif %}"
-                        role="alert">
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
                         {{ message }}
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
         
-        <!-- O conteúdo de cada página será inserido aqui -->
         {% block content %}
         {% endblock %}
     </main>
 
     <script src="{% static 'js/scripts.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

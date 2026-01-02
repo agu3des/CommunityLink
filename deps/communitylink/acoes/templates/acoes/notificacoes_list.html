@@ -3,53 +3,59 @@
 {% block title %}Minhas Notificações{% endblock %}
 
 {% block content %}
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-800">Minhas Notificações</h1>
+<div class="profile-container">
     
-    <!-- MUDANÇA: Botão de Limpar -->
-    {% if lidas_count > 0 %}
-        <form method="POST" action="{% url 'acoes:notificacoes_clear' %}">
-            {% csrf_token %}
-            <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 text-sm">
-                Limpar Lidas ({{ lidas_count }})
-            </button>
-        </form>
-    {% endif %}
-    <!-- FIM DA MUDANÇA -->
-    
-</div>
+    <div class="profile-header">
+        <h1>Minhas Notificações</h1>
+        
+        {% if lidas_count > 0 %}
+            <form method="POST" action="{% url 'acoes:notificacoes_clear' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-danger">
+                    Limpar Lidas ({{ lidas_count }})
+                </button>
+            </form>
+        {% endif %}
+    </div>
 
-<div class="bg-white rounded-lg shadow-xl p-6">
-    {% if not notificacoes %}
-        <p class="text-gray-700">Você não tem nenhuma notificação.</p>
-    {% else %}
-        <ul class="divide-y divide-gray-200">
-            {% for notificacao in notificacoes %}
-                <li class="py-4">
-                    {% if notificacao.link %}
-                        <a href="{{ notificacao.link }}" class="block hover:bg-gray-50 p-2 rounded-md">
-                            <!-- Mensagem: Fica normal se lida, negrito se não lida -->
-                            <p class="text-gray-800 {% if not notificacao.lida %}font-bold{% endif %}">
-                                {{ notificacao.mensagem }}
-                            </p>
-                            <span class="text-sm text-gray-500">
-                                {{ notificacao.created_at|timesince }} atrás
-                            </span>
-                        </a>
-                    {% else %}
-                        <div class="p-2">
-                            <p class="text-gray-800 {% if not notificacao.lida %}font-bold{% endif %}">
-                                {{ notificacao.mensagem }}
-                            </p>
-                            <span class="text-sm text-gray-500">
-                                {{ notificacao.created_at|timesince }} atrás
-                            </span>
-                        </div>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <div class="profile-content" style="padding: 0;"> {% if not notificacoes %}
+            <div style="padding: 2rem; text-align: center;">
+                <p style="color: #6b7280;">Você não tem nenhuma notificação.</p>
+            </div>
+        {% else %}
+            <ul class="notification-list">
+                {% for notificacao in notificacoes %}
+                    <li class="notification-item {% if not notificacao.lida %}unread-bg{% endif %}">
+                        {% if notificacao.link %}
+                            <a href="{{ notificacao.link }}" class="notification-link">
+                                <div class="notification-body">
+                                    <p class="notification-text {% if not notificacao.lida %}unread{% endif %}">
+                                        {{ notificacao.mensagem }}
+                                    </p>
+                                    <span class="notification-time">
+                                        {{ notificacao.created_at|timesince }} atrás
+                                    </span>
+                                </div>
+                            </a>
+                        {% else %}
+                            <div class="notification-body non-link">
+                                <p class="notification-text {% if not notificacao.lida %}unread{% endif %}">
+                                    {{ notificacao.mensagem }}
+                                </p>
+                                <span class="notification-time">
+                                    {{ notificacao.created_at|timesince }} atrás
+                                </span>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+        {% include 'acoes/_pagination.html' with page_obj=notificacoes %}
+    </div>
+
 </div>
-{% include 'acoes/_pagination.html' with page_obj=notificacoes %}
 {% endblock %}

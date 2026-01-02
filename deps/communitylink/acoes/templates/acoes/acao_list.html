@@ -1,6 +1,12 @@
 {% extends 'acoes/base.html' %}
 
-{% block title %}Ações - CommunityLink{% endblock %}
+{% load static %}
+
+{% block title %} Ações - CommunityLink {% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/acoes.css' %}">
+{% endblock %}
 
 {% block content %}
     <h1 class="page-title">Ações Comunitárias</h1>
@@ -11,9 +17,9 @@
     <div class="grid-list">
         {% for acao in acoes %}
             <div class="grid-item third">
-                <article class="card-acao">
+                <article class="action-card action-body">
                     <div>
-                        <span class="badge">{{ acao.get_categoria_display }}</span>
+                        <span class="action-tags">{{ acao.get_categoria_display }}</span>
                         <h2 class="card-title">{{ acao.titulo }}</h2>
                         <p class="muted"><strong>Data:</strong> <span class="item-date">{{ acao.data|date:"d/m/Y H:i" }}</span></p>
                         <p class="muted"><strong>Local:</strong> <span class="location">{{ acao.local }}</span></p>

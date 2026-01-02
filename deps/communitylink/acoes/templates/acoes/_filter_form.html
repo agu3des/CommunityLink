@@ -1,39 +1,49 @@
-<!-- O _ no início é uma convenção para "arquivos parciais" ou "componentes" -->
-
 <div class="filter-card">
-    <h2 style="margin:0 0 0.5rem 0;">Filtrar Ações</h2>
-    <!-- O formulário usa method="GET" para que os filtros apareçam na URL -->
+    <div class="filter-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="filter-icon">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        <h2 class="filter-title">Filtrar Ações</h2>
+    </div>
+
     <form method="GET" action="">
-        <div class="form-grid">
-            <!-- Filtro de Categoria -->
-            <div>
+        <div class="filter-grid">
+            
+            <div class="filter-group">
                 <label for="categoria">Categoria</label>
-                <select name="categoria" id="categoria">
-                    <option value="">Todas</option>
-                    {% for value, display in categorias_choices %}
-                        <option value="{{ value }}" {% if filter_values.categoria == value %}selected{% endif %}>
-                            {{ display }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <div class="select-wrapper">
+                    <select name="categoria" id="categoria">
+                        <option value="">Todas as Categorias</option>
+                        {% for value, display in categorias_choices %}
+                            <option value="{{ value }}" {% if filter_values.categoria == value %}selected{% endif %}>
+                                {{ display }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
 
-            <!-- Filtro de Local -->
-            <div>
+            <div class="filter-group">
                 <label for="local">Local</label>
-                <input type="text" name="local" id="local" value="{{ filter_values.local|default:'' }}" placeholder="Ex: Centro, BairroX">
+                <input type="text" name="local" id="local" 
+                       value="{{ filter_values.local|default:'' }}" 
+                       placeholder="Ex: Centro, Parque...">
             </div>
 
-            <!-- Filtro de Data (Exemplo: A partir de) -->
-            <div>
+            <div class="filter-group">
                 <label for="data_inicio">A partir de</label>
-                <input type="date" name="data_inicio" id="data_inicio" value="{{ filter_values.data_inicio|default:'' }}">
+                <input type="date" name="data_inicio" id="data_inicio" 
+                       value="{{ filter_values.data_inicio|default:'' }}"
+                       class="custom-date-input">
             </div>
 
-            <!-- Botões -->
-            <div style="display:flex; gap:0.5rem; align-items:flex-end;">
-                <button type="submit" class="btn btn-primary">Filtrar</button>
-                <a href="{{ request.path }}" class="btn btn-muted">Limpar</a>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    Filtrar
+                </button>
+                <a href="{{ request.path }}" class="btn btn-text">
+                    Limpar
+                </a>
             </div>
         </div>
     </form>

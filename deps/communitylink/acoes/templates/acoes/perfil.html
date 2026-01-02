@@ -1,70 +1,94 @@
 {% extends 'acoes/base.html' %}
 {% load static %}
 
-{% block title %}Meu Perfil{% endblock %}
+{% block title %}Meu Perfil - CommunityLink{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="profile-container">
+    
     <div class="profile-header">
         <h1>Meu Perfil</h1>
-        <a href="{% url 'acoes:historico' %}" class="btn btn-muted">Ver Histórico de Ações</a>
+        <a href="{% url 'acoes:historico' %}" class="btn btn-muted">
+            Ver Histórico de Ações
+        </a>
     </div>
 
     <div class="profile-content">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <!-- Dados da Conta -->
             <div class="profile-section">
                 <h2>Dados da Conta</h2>
+                
                 <div class="profile-form">
                     <div class="profile-form-row">
-                        {{ u_form.first_name.label_tag }}
+                        <label for="{{ u_form.first_name.id_for_label }}">Nome:</label>
                         {{ u_form.first_name }}
+                        {% if u_form.first_name.errors %}
+                            <div class="error-msg">{{ u_form.first_name.errors }}</div>
+                        {% endif %}
                     </div>
+
                     <div class="profile-form-row">
-                        {{ u_form.last_name.label_tag }}
+                        <label for="{{ u_form.last_name.id_for_label }}">Sobrenome:</label>
                         {{ u_form.last_name }}
+                        {% if u_form.last_name.errors %}
+                            <div class="error-msg">{{ u_form.last_name.errors }}</div>
+                        {% endif %}
                     </div>
+
                     <div class="profile-form-row">
-                        {{ u_form.email.label_tag }}
+                        <label for="{{ u_form.email.id_for_label }}">E-mail:</label>
                         {{ u_form.email }}
+                        {% if u_form.email.errors %}
+                            <div class="error-msg">{{ u_form.email.errors }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Detalhes Pessoais -->
             <div class="profile-section">
                 <h2>Detalhes Pessoais</h2>
+                
                 <div class="profile-form">
                     <div class="profile-form-row">
-                        {{ p_form.endereco.label_tag }}
+                        <label for="{{ p_form.endereco.id_for_label }}">Endereço / Bairro:</label>
                         {{ p_form.endereco }}
+                        {% if p_form.endereco.errors %}
+                            <div class="error-msg">{{ p_form.endereco.errors }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="profile-form-row">
-                        <label>Preferências de Causas</label>
+                        <label>Quais causas você tem interesse?</label>
+                        
                         <div class="checkbox-group">
                             {% for checkbox in p_form.preferencias %}
-                            <div class="checkbox-item">
-                                {{ checkbox.tag }}
-                                <label for="{{ checkbox.id_for_label }}">
-                                    {{ checkbox.choice_label }}
-                                </label>
-                            </div>
+                                <div class="checkbox-item">
+                                    {{ checkbox.tag }} <label for="{{ checkbox.id_for_label }}">
+                                        {{ checkbox.choice_label }}
+                                    </label>
+                                </div>
                             {% endfor %}
                         </div>
+                        
+                        {% if p_form.preferencias.errors %}
+                            <div class="error-msg">{{ p_form.preferencias.errors }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
             <div class="profile-actions">
-                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="submit" class="btn btn-primary">
+                    Salvar Alterações
+                </button>
             </div>
+
         </form>
     </div>
 </div>

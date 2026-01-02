@@ -296,3 +296,321 @@
         gap: 1rem;
     }
 }
+
+/* =========================================
+   NOTIFICATIONS STYLING (Adicionar ao auth.css)
+   ========================================= */
+
+/* Botão Vermelho (Danger) */
+.btn-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+/* Lista de Notificações */
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-item {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.12s ease;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+/* Item não lido (destaque sutil no fundo) */
+.notification-item.unread-bg {
+    background-color: #f0fdf4; /* Um verde muito suave, combinando com o tema */
+    border-left: 4px solid #15803d; /* Indicador visual na esquerda */
+}
+
+/* Links da notificação */
+.notification-link {
+    display: block;
+    padding: 1.25rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.notification-link:hover {
+    background-color: #f9fafb;
+    text-decoration: none !important; /* Remove sublinhado padrão */
+}
+
+/* Itens sem link */
+.notification-body.non-link {
+    padding: 1.25rem;
+}
+
+/* Texto da Mensagem */
+.notification-text {
+    font-size: 1rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.notification-text.unread {
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Tempo (TimeSince) */
+.notification-time {
+    display: block;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.4rem;
+}
+
+/* =========================================
+   SUCCESS/MESSAGE PAGES (Adicionar ao auth.css)
+   ========================================= */
+
+/* Transforma o link em um botão cheio */
+.btn-auth-primary {
+    display: block;
+    width: 100%;
+    background-color: #1f9d55; /* Verde do tema */
+    color: #ffffff !important; /* Força branco sobre o verde */
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border-radius: 6px;
+    text-decoration: none !important;
+    font-weight: 600;
+    transition: background-color 0.12s ease;
+    box-sizing: border-box;
+}
+
+.btn-auth-primary:hover {
+    background-color: #15803d; /* Verde mais escuro */
+}
+
+/* =========================================
+   PASSWORD RESET & BUTTON UPDATES (Adicionar ao auth.css)
+   ========================================= */
+
+/* Atualizando o botão para funcionar em <button> e <a> */
+.btn-auth-primary {
+    display: block;
+    width: 100%;
+    background-color: #1f9d55;
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.12s ease;
+    border: none; /* Importante para <button> */
+    cursor: pointer; /* Importante para <button> */
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.btn-auth-primary:hover {
+    background-color: #15803d;
+    color: #ffffff;
+}
+
+/* Texto de ajuda (Help Text do Django) */
+.help-text {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+/* Lista de requisitos de senha do Django (ul) */
+.help-text ul {
+    padding-left: 1.2rem;
+    margin: 0.25rem 0;
+}
+
+.help-text li {
+    margin-bottom: 0.1rem;
+}
+
+/* =========================================
+   PERFIL DO USUÁRIO (Profile Styling)
+   ========================================= */
+
+/* Container Principal */
+.profile-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+/* Cabeçalho (Título + Botão Histórico) */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.profile-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main, #111827); /* Fallback caso var não exista */
+}
+
+/* Cartão de Conteúdo (Fundo Branco) */
+.profile-content {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 2.5rem;
+}
+
+/* Seções (Dados da Conta / Detalhes Pessoais) */
+.profile-section {
+    margin-bottom: 3rem;
+}
+
+.profile-section h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-600, #15803d);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f3f4f6;
+}
+
+/* Grid do Formulário */
+.profile-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* Linhas do Formulário */
+.profile-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-form-row label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-main, #374151);
+}
+
+/* Estilização dos Inputs (Herdando ou Reforçando) */
+.profile-form-row input[type="text"],
+.profile-form-row input[type="email"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f9fafb;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.profile-form-row input:focus {
+    background-color: #ffffff;
+    border-color: var(--accent, #1f9d55);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(31, 157, 85, 0.15);
+}
+
+/* --- CHECKBOX GROUP (Preferências) --- */
+.checkbox-group {
+    display: grid;
+    /* Cria colunas automáticas com largura mínima de 200px */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+    background-color: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background-color 0.15s;
+}
+
+.checkbox-item:hover {
+    background-color: #e5e7eb;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent, #1f9d55);
+}
+
+.checkbox-item label {
+    margin: 0;
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: var(--text-main, #374151);
+}
+
+/* Ações (Botão Salvar) */
+.profile-actions {
+    display: flex;
+    justify-content: flex-end; /* Alinha à direita */
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #f3f4f6;
+}
+
+/* Responsividade */
+@media (min-width: 768px) {
+    /* Em telas maiores, coloca Nome e Sobrenome lado a lado se desejar,
+       ou mantém empilhado. Aqui mantive empilhado para simplicidade, 
+       mas o checkbox-group já é responsivo. */
+}
+
+/* =========================================
+   LOGIN PAGE EXTRAS (Adicionar ao auth.css)
+   ========================================= */
+
+/* Link "Esqueceu sua senha?" logo abaixo do botão */
+.auth-secondary-links {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.auth-secondary-links a {
+    font-size: 0.9rem;
+    color: #6b7280; /* Cinza suave */
+    text-decoration: none;
+}
+
+.auth-secondary-links a:hover {
+    color: #1f9d55; /* Verde no hover */
+    text-decoration: underline;
+}

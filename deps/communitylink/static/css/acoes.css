@@ -155,7 +155,6 @@
     border-radius: 12px;
     overflow: hidden;
     display: flex;
-    flex-direction: column;
     height: 100%;
     position: relative;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -183,6 +182,7 @@
     flex-direction: column;
     flex-grow: 1; 
     background-color: #ffffff;
+    margin: 2rem;
 }
 
 /* Tags (Area das Badges) */
@@ -386,4 +386,674 @@ input[type="file"]:hover {
     background-color: #fee2e2; /* Fundo leve ao passar o mouse */
     border-radius: 6px;
     text-decoration: none;
+}
+
+/* =========================================
+   ESTILOS DA PÁGINA DE GERENCIAMENTO
+   ========================================= */
+
+/* --- Banner de Vagas --- */
+.vacancy-banner {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid var(--accent); /* Borda verde */
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.vacancy-banner.full {
+    border-left-color: var(--danger); /* Borda vermelha se cheia */
+    background-color: #fff1f2; /* Fundo levemente avermelhado */
+}
+
+.vacancy-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.vacancy-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.vacancy-numbers {
+    font-size: 1.8rem;
+    color: var(--text-main);
+}
+
+/* --- Títulos de Seção --- */
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.text-success { color: var(--accent-600); }
+.text-danger { color: var(--danger); }
+
+/* --- Painel Card Genérico (Fundo branco) --- */
+.card-panel {
+    background-color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.empty-state-mini {
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    padding: 1rem;
+}
+
+/* --- Lista de Pendentes --- */
+.manage-section {
+    margin-bottom: 2.5rem;
+}
+
+.pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pending-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    gap: 1rem;
+}
+
+.pending-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.user-date {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.pending-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* --- Botões Pequenos e Específicos --- */
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+    border: 1px solid var(--danger);
+}
+.btn-danger:hover {
+    background-color: #b91c1c;
+    border-color: #b91c1c;
+}
+
+/* --- Grid de Colunas (Aceitos/Rejeitados) --- */
+.manage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+/* --- Lista Simples de Usuários --- */
+.user-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.user-list-item:last-child {
+    border-bottom: none;
+}
+
+.user-list-item.rejected .username {
+    text-decoration: line-through;
+    color: var(--muted);
+}
+
+.empty-list-item {
+    color: var(--muted);
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.9rem;
+}
+
+/* =========================================
+   PÁGINA DE DETALHES DA AÇÃO (acao_detail)
+   ========================================= */
+
+/* Container Centralizado */
+.detail-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+/* O Cartão Principal */
+.detail-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* --- Cabeçalho --- */
+.detail-header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.detail-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.detail-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* --- Grid de Informações --- */
+.detail-info-grid {
+    display: grid;
+    /* Grid responsivo: cria colunas automaticamente */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px; /* Gap pequeno para criar linhas divisórias se usarmos background */
+    background-color: #f3f4f6; /* Cor das linhas da grade */
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.info-box {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.info-icon {
+    color: var(--accent);
+    padding-top: 0.2rem;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.info-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* Barra de Progresso (Vagas) */
+.progress-bar-bg {
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--accent);
+    border-radius: 3px;
+}
+
+/* --- Descrição --- */
+.detail-description {
+    padding: 2rem;
+}
+
+.detail-description h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.prose-content {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #4b5563;
+}
+
+.prose-content p {
+    margin-bottom: 1rem;
+}
+
+/* --- Rodapé / Ações --- */
+.detail-actions {
+    padding: 1.5rem 2rem;
+    background-color: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.owner-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.btn-disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    border: 1px solid #d1d5db;
+    padding: 0.75rem;
+    text-align: center;
+    display: block;
+    width: 100%;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.btn-danger-outline {
+    background-color: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-danger-outline:hover {
+    background-color: var(--danger);
+    color: white;
+}
+
+.status-message.locked {
+    padding: 0.5rem 1rem;
+    background-color: #f3f4f6;
+    color: var(--muted);
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.help-text {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.apply-form {
+    margin: 0;
+    width: 100%;
+}
+
+/* =========================================
+   PÁGINA DE HISTÓRICO (historico)
+   ========================================= */
+
+.history-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+}
+
+.history-section {
+    margin-bottom: 3rem;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* --- Cartão de Histórico (Base) --- */
+.history-card {
+    background-color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 0 8px 8px 0; /* Arredondado só na direita */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    /* Borda grossa na esquerda para indicar tipo */
+    border-left-width: 5px; 
+    border-left-style: solid;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.history-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Variação: Organizador (Cinza) */
+.organizer-card {
+    border-left-color: #9ca3af; /* Cinza médio */
+}
+
+/* Variação: Voluntário (Verde/Accent) */
+.volunteer-card {
+    border-left-color: var(--accent);
+}
+
+/* --- Cabeçalho do Card --- */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.history-item-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0 0 0.25rem 0;
+}
+
+.history-meta {
+    font-size: 0.95rem;
+    color: #4b5563;
+    margin: 0 0 0.25rem 0;
+}
+
+.history-meta-sub {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+.status-badge-wrapper {
+    margin-top: 0.5rem;
+}
+
+/* Link simples (sem parecer botão) */
+.btn-link {
+    color: #2563eb; /* Azul padrão web */
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* --- Rodapé do Card (Formulário) --- */
+.history-footer {
+    border-top: 1px solid #f3f4f6;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+}
+
+.history-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label-sm {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+.form-row-inline {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+.form-input-sm {
+    flex-grow: 1;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background-color: #f9fafb;
+    resize: vertical;
+    transition: all 0.2s;
+}
+
+.form-input-sm:focus {
+    background-color: #ffffff;
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(31, 157, 85, 0.1);
+}
+
+/* Responsividade para o form */
+@media (max-width: 600px) {
+    .form-row-inline {
+        flex-direction: column;
+    }
+    .form-row-inline button {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   PÁGINA DE FORMULÁRIO (acao_form)
+   ========================================= */
+
+.form-page-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding-bottom: 4rem;
+}
+
+/* --- Cabeçalho do Form --- */
+.form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.form-subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+}
+
+/* --- Cartão do Formulário --- */
+.form-card {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Grupos e Labels --- */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.required-mark {
+    color: var(--danger);
+    margin-left: 2px;
+}
+
+/* --- Estilização dos Inputs (Genérico do Django) --- */
+/* Isso garante que inputs sem classes específicas fiquem bonitos */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group input[type="datetime-local"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #f9fafb;
+    font-size: 1rem;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+    box-sizing: border-box; /* Garante que o padding não estoure a largura */
+}
+
+/* Foco nos inputs */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    background-color: #ffffff;
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(31, 157, 85, 0.15); /* Sombra verde suave */
+}
+
+/* Textarea específico */
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Input de Arquivo (Upload) */
+.form-group input[type="file"] {
+    background-color: #f3f4f6;
+    padding: 0.5rem;
+    border: 1px dashed #d1d5db;
+    cursor: pointer;
+}
+
+/* Checkbox (Django renderiza input depois label as vezes, ou dentro) */
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+    transform: scale(1.2);
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
+/* --- Estados de Erro e Ajuda --- */
+.form-help-text {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+}
+
+.field-error-msg {
+    font-size: 0.85rem;
+    color: var(--danger);
+    margin-top: 0.4rem;
+    font-weight: 500;
+}
+
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+    border-color: var(--danger);
+    background-color: #fef2f2;
+}
+
+/* Alerta Geral (non_field_errors) */
+.alert-error {
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* --- Botões de Ação --- */
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn-text:hover {
+    color: var(--text-main);
+    text-decoration: underline;
 }
