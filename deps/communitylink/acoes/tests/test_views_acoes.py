@@ -460,14 +460,3 @@ class TestMinhasAcoesView:
 
         assert acao_futura in acoes
         assert acao_outro not in acoes
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novas views
-# ============================================
-
-# Quando adicionar avaliações, adicione aqui:
-# @pytest.mark.django_db
-# class TestAvaliacaoCreateView:
-#     """CT-V060: Testes de criação de avaliação - Sprint 2"""
-#     pass

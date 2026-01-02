@@ -456,14 +456,3 @@ class TestPermissoesEspeciais:
 
         assert notif_vol in notificacoes
         assert notif_org not in notificacoes
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novas permissões
-# ============================================
-
-# Quando adicionar avaliações ou outras funcionalidades:
-# @pytest.mark.django_db
-# class TestPermissoesAvaliacao:
-#     """CT-P050: Permissões de avaliação - Sprint 2"""
-#     pass

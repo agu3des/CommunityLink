@@ -303,14 +303,3 @@ class TestNotificacaoModel:
         str_repr = str(notificacao)
         assert '...' in str_repr
         assert len(notificacao.mensagem[:30]) <= 30
-
-
-# ============================================
-# SPRINT 2 - Placeholder para futuras funcionalidades
-# ============================================
-
-# Quando implementar avaliações, adicione aqui:
-# @pytest.mark.django_db
-# class TestAvaliacaoModel:
-#     """CT-M030: Testes do modelo Avaliacao - Sprint 2"""
-#     pass

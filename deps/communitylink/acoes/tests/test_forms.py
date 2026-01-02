@@ -301,14 +301,3 @@ class TestAcaoForm:
 
         form = AcaoForm(data=data)
         assert form.is_valid()
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novos formulários
-# ============================================
-
-# Quando adicionar formulário de avaliação:
-# @pytest.mark.django_db
-# class TestAvaliacaoForm:
-#     """CT-F020: Testes do formulário AvaliacaoForm - Sprint 2"""
-#     pass

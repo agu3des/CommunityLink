@@ -590,14 +590,3 @@ class TestHistoricoFiltros:
         # Deve funcionar sem erro
         assert response.status_code == 200
         assert response.context['historico_organizadas'] is not None
-
-
-# ============================================
-# SPRINT 2 - Placeholder para novos recursos
-# ============================================
-
-# Quando adicionar avaliações ou relatórios:
-# @pytest.mark.django_db
-# class TestHistoricoAvaliacoes:
-#     """CT-H040: Testes de avaliações no histórico - Sprint 2"""
-#     pass

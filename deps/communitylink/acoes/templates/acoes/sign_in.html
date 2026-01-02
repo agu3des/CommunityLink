@@ -30,6 +30,10 @@
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">Entrar</button>
       </div>
+
+      <div class="mt-4 text-center">
+          <a href="{% url 'acoes:password_reset' %}" class="text-sm text-green-600 hover:underline">Esqueceu sua senha?</a>
+      </div>
     </form>
     <p>Não tem conta? <a href="{% url 'acoes:signup' %}">Cadastre-se</a></p>
   </div>
