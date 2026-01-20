@@ -7,12 +7,13 @@ Este arquivo testa a lógica de negócio dos modelos:
 - Notificacao: Criação e marcação de lida
 """
 
-import pytest
+from django.test import TestCase
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.utils import IntegrityError
 from datetime import timedelta
 from acoes.models import Acao, Inscricao, Notificacao
+from .test_base import FullFixturesMixin
 
 
 # ============================================
@@ -20,14 +21,13 @@ from acoes.models import Acao, Inscricao, Notificacao
 # ============================================
 
 
-@pytest.mark.django_db
-class TestAcaoModel:
+class TestAcaoModel(FullFixturesMixin, TestCase):
     """
     CT-M001: Testes do modelo Acao
     Referência: Documento de Casos de Teste - Modelos
     """
 
-    def test_criar_acao_valida(self, organizador_user):
+    def test_criar_acao_valida(self):
         """
         CT-M001.1: Criar ação com todos os campos válidos
         Resultado Esperado: Ação criada com sucesso
@@ -39,37 +39,37 @@ class TestAcaoModel:
             local='Centro de Saúde - Rua A, 123',
             numero_vagas=50,
             categoria='SAUDE',
-            organizador=organizador_user
+            organizador=self.organizador_user
         )
 
-        assert acao.titulo == 'Campanha de Vacinação'
-        assert acao.numero_vagas == 50
-        assert acao.categoria == 'SAUDE'
-        assert acao.organizador == organizador_user
+        self.assertEqual(acao.titulo, 'Campanha de Vacinação')
+        self.assertEqual(acao.numero_vagas, 50)
+        self.assertEqual(acao.categoria, 'SAUDE')
+        self.assertEqual(acao.organizador, self.organizador_user)
 
-    def test_str_retorna_titulo(self, acao_futura):
+    def test_str_retorna_titulo(self):
         """
         CT-M001.2: Método __str__ retorna o título da ação
         Resultado Esperado: String igual ao título
         """
-        assert str(acao_futura) == acao_futura.titulo
+        self.assertEqual(str(self.acao_futura), self.acao_futura.titulo)
 
-    def test_get_absolute_url(self, acao_futura):
+    def test_get_absolute_url(self):
         """
         CT-M001.3: get_absolute_url retorna URL correta
         Resultado Esperado: URL no formato /acoes/<pk>/
         """
-        expected_url = f'/acoes/{acao_futura.pk}/'
-        assert acao_futura.get_absolute_url() == expected_url
+        expected_url = f'/acoes/{self.acao_futura.pk}/'
+        self.assertEqual(self.acao_futura.get_absolute_url(), expected_url)
 
-    def test_vagas_preenchidas_inicial_zero(self, acao_futura):
+    def test_vagas_preenchidas_inicial_zero(self):
         """
         CT-M002.1: Ação nova tem 0 vagas preenchidas
         Resultado Esperado: vagas_preenchidas == 0
         """
-        assert acao_futura.vagas_preenchidas == 0
+        self.assertEqual(self.acao_futura.vagas_preenchidas, 0)
 
-    def test_vagas_preenchidas_conta_apenas_aceitos(self, acao_futura, voluntario_user):
+    def test_vagas_preenchidas_conta_apenas_aceitos(self):
         """
         CT-M002.2: vagas_preenchidas conta apenas inscrições ACEITAS
         Resultado Esperado: Apenas status='ACEITO' são contados
@@ -77,34 +77,34 @@ class TestAcaoModel:
         # Cria 3 inscrições aceitas
         for i in range(3):
             vol = User.objects.create_user(f'vol_aceito_{i}', f'vol{i}@test.com', 'pass')
-            Inscricao.objects.create(acao=acao_futura, voluntario=vol, status='ACEITO')
+            Inscricao.objects.create(acao=self.acao_futura, voluntario=vol, status='ACEITO')
 
         # Cria 2 inscrições pendentes
         for i in range(2):
             vol = User.objects.create_user(f'vol_pend_{i}', f'pend{i}@test.com', 'pass')
-            Inscricao.objects.create(acao=acao_futura, voluntario=vol, status='PENDENTE')
+            Inscricao.objects.create(acao=self.acao_futura, voluntario=vol, status='PENDENTE')
 
         # Cria 1 inscrição rejeitada
         vol_rej = User.objects.create_user('vol_rej', 'rej@test.com', 'pass')
-        Inscricao.objects.create(acao=acao_futura, voluntario=vol_rej, status='REJEITADO')
+        Inscricao.objects.create(acao=self.acao_futura, voluntario=vol_rej, status='REJEITADO')
 
-        assert acao_futura.vagas_preenchidas == 3
+        self.assertEqual(self.acao_futura.vagas_preenchidas, 3)
 
-    def test_esta_cheia_false_com_vagas(self, acao_futura):
+    def test_esta_cheia_false_com_vagas(self):
         """
         CT-M003.1: esta_cheia retorna False quando há vagas
         Resultado Esperado: esta_cheia == False
         """
-        assert acao_futura.esta_cheia is False
+        self.assertFalse(self.acao_futura.esta_cheia)
 
-    def test_esta_cheia_true_quando_lotada(self, acao_cheia):
+    def test_esta_cheia_true_quando_lotada(self):
         """
         CT-M003.2: esta_cheia retorna True quando todas vagas preenchidas
         Resultado Esperado: esta_cheia == True
         """
-        assert acao_cheia.esta_cheia is True
+        self.assertTrue(self.acao_cheia.esta_cheia)
 
-    def test_categorias_validas(self, organizador_user):
+    def test_categorias_validas(self):
         """
         CT-M004: Apenas categorias definidas em CATEGORIA_CHOICES são válidas
         Resultado Esperado: Ação aceita categorias válidas
@@ -112,41 +112,41 @@ class TestAcaoModel:
         categorias_validas = ['SAUDE', 'EDUCACAO', 'MEIO_AMBIENTE', 'ANIMAIS', 'OUTRO']
 
         for categoria in categorias_validas:
-            acao = Acao.objects.create(
-                titulo=f'Ação {categoria}',
-                descricao='Teste',
-                data=timezone.now() + timedelta(days=7),
-                local='Local',
-                numero_vagas=10,
-                categoria=categoria,
-                organizador=organizador_user
-            )
-            assert acao.categoria == categoria
+            with self.subTest(categoria=categoria):
+                acao = Acao.objects.create(
+                    titulo=f'Ação {categoria}',
+                    descricao='Teste',
+                    data=timezone.now() + timedelta(days=7),
+                    local='Local',
+                    numero_vagas=10,
+                    categoria=categoria,
+                    organizador=self.organizador_user
+                )
+                self.assertEqual(acao.categoria, categoria)
 
 
-@pytest.mark.django_db
-class TestInscricaoModel:
+class TestInscricaoModel(FullFixturesMixin, TestCase):
     """
     CT-M010: Testes do modelo Inscricao
     Referência: Documento de Casos de Teste - Inscrições
     """
 
-    def test_criar_inscricao_valida(self, acao_futura, voluntario_user):
+    def test_criar_inscricao_valida(self):
         """
         CT-M010.1: Criar inscrição com ação e voluntário válidos
         Resultado Esperado: Inscrição criada com status PENDENTE
         """
         inscricao = Inscricao.objects.create(
-            acao=acao_futura,
-            voluntario=voluntario_user
+            acao=self.acao_futura,
+            voluntario=self.voluntario_user
         )
 
-        assert inscricao.status == 'PENDENTE'
-        assert inscricao.acao == acao_futura
-        assert inscricao.voluntario == voluntario_user
-        assert inscricao.data_inscricao is not None
+        self.assertEqual(inscricao.status, 'PENDENTE')
+        self.assertEqual(inscricao.acao, self.acao_futura)
+        self.assertEqual(inscricao.voluntario, self.voluntario_user)
+        self.assertIsNotNone(inscricao.data_inscricao)
 
-    def test_status_choices_validos(self, acao_futura, voluntario_user):
+    def test_status_choices_validos(self):
         """
         CT-M010.2: Inscrição aceita status PENDENTE, ACEITO e REJEITADO
         Resultado Esperado: Status definido corretamente
@@ -154,27 +154,28 @@ class TestInscricaoModel:
         status_validos = ['PENDENTE', 'ACEITO', 'REJEITADO']
 
         for i, status in enumerate(status_validos):
-            vol = User.objects.create_user(f'vol_{i}', f'vol{i}@test.com', 'pass')
-            inscricao = Inscricao.objects.create(
-                acao=acao_futura,
-                voluntario=vol,
-                status=status
-            )
-            assert inscricao.status == status
+            with self.subTest(status=status):
+                vol = User.objects.create_user(f'vol_{i}', f'vol{i}@test.com', 'pass')
+                inscricao = Inscricao.objects.create(
+                    acao=self.acao_futura,
+                    voluntario=vol,
+                    status=status
+                )
+                self.assertEqual(inscricao.status, status)
 
-    def test_unique_together_impede_inscricao_duplicada(self, acao_futura, voluntario_user):
+    def test_unique_together_impede_inscricao_duplicada(self):
         """
         CT-M011: Usuário não pode se inscrever 2x na mesma ação
         Resultado Esperado: IntegrityError ao tentar duplicar
         """
         # Primeira inscrição
-        Inscricao.objects.create(acao=acao_futura, voluntario=voluntario_user)
+        Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
 
         # Segunda inscrição deve falhar
-        with pytest.raises(IntegrityError):
-            Inscricao.objects.create(acao=acao_futura, voluntario=voluntario_user)
+        with self.assertRaises(IntegrityError):
+            Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
 
-    def test_voluntario_pode_se_inscrever_em_multiplas_acoes(self, organizador_user, voluntario_user):
+    def test_voluntario_pode_se_inscrever_em_multiplas_acoes(self):
         """
         CT-M012: Voluntário pode se inscrever em várias ações diferentes
         Resultado Esperado: Múltiplas inscrições criadas com sucesso
@@ -188,118 +189,117 @@ class TestInscricaoModel:
                 data=timezone.now() + timedelta(days=7 + i),
                 local='Local',
                 numero_vagas=10,
-                organizador=organizador_user
+                organizador=self.organizador_user
             )
             acoes.append(acao)
 
         # Inscreve o mesmo voluntário nas 3 ações
         for acao in acoes:
-            Inscricao.objects.create(acao=acao, voluntario=voluntario_user)
+            Inscricao.objects.create(acao=acao, voluntario=self.voluntario_user)
 
         # Verifica que o voluntário tem 3 inscrições
-        assert Inscricao.objects.filter(voluntario=voluntario_user).count() == 3
+        self.assertEqual(Inscricao.objects.filter(voluntario=self.voluntario_user).count(), 3)
 
-    def test_str_representation(self, inscricao_pendente):
+    def test_str_representation(self):
         """
         CT-M013: Método __str__ retorna formato legível
         Resultado Esperado: String com username, título da ação e status
         """
-        expected = f'{inscricao_pendente.voluntario.username} em {inscricao_pendente.acao.titulo} ({inscricao_pendente.status})'
-        assert str(inscricao_pendente) == expected
+        expected = f'{self.inscricao_pendente.voluntario.username} em {self.inscricao_pendente.acao.titulo} ({self.inscricao_pendente.status})'
+        self.assertEqual(str(self.inscricao_pendente), expected)
 
 
-@pytest.mark.django_db
-class TestNotificacaoModel:
+class TestNotificacaoModel(FullFixturesMixin, TestCase):
     """
     CT-M020: Testes do modelo Notificacao
     Referência: Documento de Casos de Teste - Notificações
     """
 
-    def test_criar_notificacao_valida(self, voluntario_user):
+    def test_criar_notificacao_valida(self):
         """
         CT-M020.1: Criar notificação com destinatário e mensagem
         Resultado Esperado: Notificação criada com lida=False
         """
         notificacao = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem='Sua inscrição foi aceita!'
         )
 
-        assert notificacao.destinatario == voluntario_user
-        assert notificacao.mensagem == 'Sua inscrição foi aceita!'
-        assert notificacao.lida is False
-        assert notificacao.created_at is not None
+        self.assertEqual(notificacao.destinatario, self.voluntario_user)
+        self.assertEqual(notificacao.mensagem, 'Sua inscrição foi aceita!')
+        self.assertFalse(notificacao.lida)
+        self.assertIsNotNone(notificacao.created_at)
 
-    def test_notificacao_com_link(self, voluntario_user):
+    def test_notificacao_com_link(self):
         """
         CT-M020.2: Notificação pode ter link opcional
         Resultado Esperado: Link armazenado corretamente
         """
         notificacao = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem='Nova ação disponível',
             link='http://example.com/acoes/1/'
         )
 
-        assert notificacao.link == 'http://example.com/acoes/1/'
+        self.assertEqual(notificacao.link, 'http://example.com/acoes/1/')
 
-    def test_marcar_como_lida(self, voluntario_user):
+    def test_marcar_como_lida(self):
         """
         CT-M021: Marcar notificação como lida
         Resultado Esperado: lida muda de False para True
         """
         notificacao = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem='Teste'
         )
 
-        assert notificacao.lida is False
+        self.assertFalse(notificacao.lida)
 
         notificacao.lida = True
         notificacao.save()
 
-        assert notificacao.lida is True
+        self.assertTrue(notificacao.lida)
 
-    def test_ordering_por_created_at_desc(self, voluntario_user):
+    def test_ordering_por_created_at_desc(self):
         """
         CT-M022: Notificações ordenadas por created_at descendente (mais recentes primeiro)
         Resultado Esperado: Ordem correta ao buscar do banco
         """
         # Cria 3 notificações em momentos diferentes
         notif1 = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem='Primeira'
         )
 
         notif2 = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem='Segunda'
         )
 
         notif3 = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem='Terceira'
         )
 
         # Busca todas as notificações (usando a ordenação padrão do Meta)
-        notificacoes = list(Notificacao.objects.filter(destinatario=voluntario_user))
+        notificacoes = list(Notificacao.objects.filter(destinatario=self.voluntario_user))
 
         # A mais recente deve vir primeiro
-        assert notificacoes[0] == notif3
-        assert notificacoes[1] == notif2
-        assert notificacoes[2] == notif1
+        self.assertEqual(notificacoes[0], notif3)
+        self.assertEqual(notificacoes[1], notif2)
+        self.assertEqual(notificacoes[2], notif1)
 
-    def test_str_trunca_mensagem_longa(self, voluntario_user):
+    def test_str_trunca_mensagem_longa(self):
         """
         CT-M023: __str__ trunca mensagens longas em 30 caracteres
         Resultado Esperado: String com mensagem truncada + '...'
         """
         mensagem_longa = 'Esta é uma mensagem muito longa que deve ser truncada no método __str__'
         notificacao = Notificacao.objects.create(
-            destinatario=voluntario_user,
+            destinatario=self.voluntario_user,
             mensagem=mensagem_longa
         )
 
         str_repr = str(notificacao)
-        assert '...' in str_repr
-        assert len(notificacao.mensagem[:30]) <= 30
+        self.assertIn('...', str_repr)
+        self.assertLessEqual(len(notificacao.mensagem[:30]), 30)

@@ -5,11 +5,12 @@ Este arquivo testa a validação e comportamento dos formulários:
 - AcaoForm: Criação e edição de ações
 """
 
-import pytest
+from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
 from acoes.forms import AcaoForm
 from acoes.models import Acao
+from .test_base import FullFixturesMixin
 
 
 # ============================================
@@ -17,8 +18,7 @@ from acoes.models import Acao
 # ============================================
 
 
-@pytest.mark.django_db
-class TestAcaoForm:
+class TestAcaoForm(FullFixturesMixin, TestCase):
     """
     CT-F001: Testes do formulário AcaoForm
     Referência: Documento de Casos de Teste - Formulários
@@ -39,7 +39,7 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert form.is_valid()
+        self.assertTrue(form.is_valid())
 
     def test_form_invalido_sem_titulo(self):
         """
@@ -55,8 +55,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'titulo' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('titulo', form.errors)
 
     def test_form_invalido_sem_data(self):
         """
@@ -72,8 +72,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'data' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('data', form.errors)
 
     def test_form_invalido_sem_local(self):
         """
@@ -89,8 +89,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'local' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('local', form.errors)
 
     def test_form_invalido_sem_numero_vagas(self):
         """
@@ -106,8 +106,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'numero_vagas' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('numero_vagas', form.errors)
 
     def test_form_invalido_numero_vagas_negativo(self):
         """
@@ -124,7 +124,7 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
+        self.assertFalse(form.is_valid())
 
     def test_form_invalido_numero_vagas_zero(self):
         """
@@ -141,7 +141,7 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
+        self.assertFalse(form.is_valid())
 
     def test_form_aceita_todas_categorias_validas(self):
         """
@@ -151,17 +151,18 @@ class TestAcaoForm:
         categorias = ['SAUDE', 'EDUCACAO', 'MEIO_AMBIENTE', 'ANIMAIS', 'OUTRO']
 
         for categoria in categorias:
-            data = {
-                'titulo': f'Ação {categoria}',
-                'descricao': 'Descrição',
-                'data': (timezone.now() + timedelta(days=7)).strftime('%Y-%m-%dT%H:%M'),
-                'local': 'Local',
-                'numero_vagas': 10,
-                'categoria': categoria
-            }
+            with self.subTest(categoria=categoria):
+                data = {
+                    'titulo': f'Ação {categoria}',
+                    'descricao': 'Descrição',
+                    'data': (timezone.now() + timedelta(days=7)).strftime('%Y-%m-%dT%H:%M'),
+                    'local': 'Local',
+                    'numero_vagas': 10,
+                    'categoria': categoria
+                }
 
-            form = AcaoForm(data=data)
-            assert form.is_valid(), f"Categoria {categoria} deveria ser válida"
+                form = AcaoForm(data=data)
+                self.assertTrue(form.is_valid(), f"Categoria {categoria} deveria ser válida")
 
     def test_form_invalido_categoria_inexistente(self):
         """
@@ -178,8 +179,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'categoria' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('categoria', form.errors)
 
     def test_form_data_campo_usa_datetime_local_widget(self):
         """
@@ -189,9 +190,9 @@ class TestAcaoForm:
         form = AcaoForm()
         data_widget = form.fields['data'].widget
 
-        assert data_widget.input_type == 'datetime-local'
+        self.assertEqual(data_widget.input_type, 'datetime-local')
 
-    def test_form_salva_acao_corretamente(self, organizador_user):
+    def test_form_salva_acao_corretamente(self):
         """
         CT-F007: Form salva ação no banco corretamente
         Resultado Esperado: Ação criada com dados corretos
@@ -206,30 +207,30 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert form.is_valid()
+        self.assertTrue(form.is_valid())
 
         # Salva a ação (sem commit para adicionar organizador)
         acao = form.save(commit=False)
-        acao.organizador = organizador_user
+        acao.organizador = self.organizador_user
         acao.save()
 
         # Verifica que foi salva corretamente
-        assert Acao.objects.filter(titulo='Ação para Salvar').exists()
+        self.assertTrue(Acao.objects.filter(titulo='Ação para Salvar').exists())
         acao_db = Acao.objects.get(titulo='Ação para Salvar')
-        assert acao_db.numero_vagas == 25
-        assert acao_db.categoria == 'MEIO_AMBIENTE'
-        assert acao_db.organizador == organizador_user
+        self.assertEqual(acao_db.numero_vagas, 25)
+        self.assertEqual(acao_db.categoria, 'MEIO_AMBIENTE')
+        self.assertEqual(acao_db.organizador, self.organizador_user)
 
-    def test_form_edicao_mantem_dados_existentes(self, acao_futura):
+    def test_form_edicao_mantem_dados_existentes(self):
         """
         CT-F008: Form de edição carrega dados existentes da ação
         Resultado Esperado: Campos preenchidos com dados atuais
         """
-        form = AcaoForm(instance=acao_futura)
+        form = AcaoForm(instance=self.acao_futura)
 
-        assert form.instance == acao_futura
-        assert form.initial['titulo'] == acao_futura.titulo
-        assert form.initial['numero_vagas'] == acao_futura.numero_vagas
+        self.assertEqual(form.instance, self.acao_futura)
+        self.assertEqual(form.initial['titulo'], self.acao_futura.titulo)
+        self.assertEqual(form.initial['numero_vagas'], self.acao_futura.numero_vagas)
 
     def test_form_campos_obrigatorios_corretos(self):
         """
@@ -239,11 +240,11 @@ class TestAcaoForm:
         form = AcaoForm()
 
         # Campos obrigatórios
-        assert form.fields['titulo'].required
-        assert form.fields['data'].required
-        assert form.fields['local'].required
-        assert form.fields['numero_vagas'].required
-        assert form.fields['categoria'].required
+        self.assertTrue(form.fields['titulo'].required)
+        self.assertTrue(form.fields['data'].required)
+        self.assertTrue(form.fields['local'].required)
+        self.assertTrue(form.fields['numero_vagas'].required)
+        self.assertTrue(form.fields['categoria'].required)
 
     def test_form_titulo_longo_invalido(self):
         """
@@ -262,8 +263,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'titulo' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('titulo', form.errors)
 
     def test_form_local_longo_invalido(self):
         """
@@ -282,8 +283,8 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert not form.is_valid()
-        assert 'local' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('local', form.errors)
 
     def test_form_data_formato_correto(self):
         """
@@ -300,4 +301,4 @@ class TestAcaoForm:
         }
 
         form = AcaoForm(data=data)
-        assert form.is_valid()
+        self.assertTrue(form.is_valid())

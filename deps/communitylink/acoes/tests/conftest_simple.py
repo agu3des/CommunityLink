@@ -1,3 +1,4 @@
+
 """
 Fixtures SIMPLIFICADAS - SEM sistema de grupos automático
 

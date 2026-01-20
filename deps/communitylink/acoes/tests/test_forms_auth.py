@@ -8,10 +8,11 @@ Este arquivo testa os formulários:
 - PerfilUpdateForm: Atualização de perfil com preferências
 """
 
-import pytest
+from django.test import TestCase
 from django.contrib.auth.models import User
 from acoes.forms import SignUpForm, SignInForm, UserUpdateForm, PerfilUpdateForm
 from acoes.models import Perfil
+from .test_base import FullFixturesMixin
 
 
 # ============================================
@@ -19,8 +20,7 @@ from acoes.models import Perfil
 # ============================================
 
 
-@pytest.mark.django_db
-class TestSignUpForm:
+class TestSignUpForm(TestCase):
     """
     CT-FA001: Testes do formulário de cadastro
     Referência: Documento de Casos de Teste - Formulários
@@ -40,7 +40,7 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert form.is_valid()
+        self.assertTrue(form.is_valid())
 
     def test_signup_form_campo_tipo_usuario_obrigatorio(self):
         """
@@ -56,8 +56,8 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
-        assert 'tipo_usuario' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('tipo_usuario', form.errors)
 
     def test_signup_form_tipo_usuario_choices_validos(self):
         """
@@ -65,16 +65,17 @@ class TestSignUpForm:
         Resultado Esperado: Form aceita ambos
         """
         for tipo in ['VOLUNTARIO', 'ORGANIZADOR']:
-            data = {
-                'username': f'user_{tipo}',
-                'email': f'{tipo}@test.com',
-                'tipo_usuario': tipo,
-                'password1': 'senha123!',
-                'password2': 'senha123!'
-            }
+            with self.subTest(tipo=tipo):
+                data = {
+                    'username': f'user_{tipo}',
+                    'email': f'{tipo}@test.com',
+                    'tipo_usuario': tipo,
+                    'password1': 'senha123!',
+                    'password2': 'senha123!'
+                }
 
-            form = SignUpForm(data=data)
-            assert form.is_valid(), f"Tipo {tipo} deveria ser válido"
+                form = SignUpForm(data=data)
+                self.assertTrue(form.is_valid(), f"Tipo {tipo} deveria ser válido")
 
     def test_signup_form_email_obrigatorio(self):
         """
@@ -89,8 +90,8 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
-        assert 'email' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
 
     def test_signup_form_email_invalido(self):
         """
@@ -106,8 +107,8 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
-        assert 'email' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
 
     def test_signup_form_email_duplicado(self):
         """
@@ -126,9 +127,9 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
-        assert 'email' in form.errors
-        assert 'já está em uso' in str(form.errors['email'])
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
+        self.assertIn('já está em uso', str(form.errors['email']))
 
     def test_signup_form_email_case_insensitive(self):
         """
@@ -147,8 +148,8 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
-        assert 'email' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
 
     def test_signup_form_senhas_diferentes(self):
         """
@@ -164,7 +165,7 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
+        self.assertFalse(form.is_valid())
 
     def test_signup_form_senha_muito_curta(self):
         """
@@ -180,7 +181,7 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert not form.is_valid()
+        self.assertFalse(form.is_valid())
 
     def test_signup_form_salva_usuario_corretamente(self):
         """
@@ -196,13 +197,13 @@ class TestSignUpForm:
         }
 
         form = SignUpForm(data=data)
-        assert form.is_valid()
+        self.assertTrue(form.is_valid())
 
         user = form.save()
 
-        assert User.objects.filter(username='novo_user').exists()
-        assert user.email == 'novo@test.com'
-        assert user.check_password('senhaSegura123!')  # Senha foi hasheada
+        self.assertTrue(User.objects.filter(username='novo_user').exists())
+        self.assertEqual(user.email, 'novo@test.com')
+        self.assertTrue(user.check_password('senhaSegura123!'))  # Senha foi hasheada
 
     def test_signup_form_fields_corretos(self):
         """
@@ -211,15 +212,14 @@ class TestSignUpForm:
         """
         form = SignUpForm()
 
-        assert 'username' in form.fields
-        assert 'email' in form.fields
-        assert 'tipo_usuario' in form.fields
-        assert 'password1' in form.fields
-        assert 'password2' in form.fields
+        self.assertIn('username', form.fields)
+        self.assertIn('email', form.fields)
+        self.assertIn('tipo_usuario', form.fields)
+        self.assertIn('password1', form.fields)
+        self.assertIn('password2', form.fields)
 
 
-@pytest.mark.django_db
-class TestSignInForm:
+class TestSignInForm(TestCase):
     """
     CT-FA010: Testes do formulário de login
     """
@@ -243,7 +243,7 @@ class TestSignInForm:
         }
 
         form = SignInForm(request=request, data=data)
-        assert form.is_valid()
+        self.assertTrue(form.is_valid())
 
     def test_signin_form_invalido_com_senha_errada(self):
         """
@@ -262,7 +262,7 @@ class TestSignInForm:
         }
 
         form = SignInForm(request=request, data=data)
-        assert not form.is_valid()
+        self.assertFalse(form.is_valid())
 
     def test_signin_form_invalido_com_usuario_inexistente(self):
         """
@@ -279,7 +279,7 @@ class TestSignInForm:
         }
 
         form = SignInForm(request=request, data=data)
-        assert not form.is_valid()
+        self.assertFalse(form.is_valid())
 
     def test_signin_form_campos_obrigatorios(self):
         """
@@ -296,18 +296,17 @@ class TestSignInForm:
         }
 
         form = SignInForm(request=request, data=data)
-        assert not form.is_valid()
-        assert 'username' in form.errors or '__all__' in form.errors
-        assert 'password' in form.errors or '__all__' in form.errors
+        self.assertFalse(form.is_valid())
+        self.assertTrue('username' in form.errors or '__all__' in form.errors)
+        self.assertTrue('password' in form.errors or '__all__' in form.errors)
 
 
-@pytest.mark.django_db
-class TestUserUpdateForm:
+class TestUserUpdateForm(FullFixturesMixin, TestCase):
     """
     CT-FA020: Testes do formulário de atualização de User
     """
 
-    def test_user_update_form_valido(self, voluntario_user):
+    def test_user_update_form_valido(self):
         """
         CT-FA020.1: Form válido com dados corretos
         Resultado Esperado: is_valid() == True
@@ -318,10 +317,10 @@ class TestUserUpdateForm:
             'email': 'joao@test.com'
         }
 
-        form = UserUpdateForm(data=data, instance=voluntario_user)
-        assert form.is_valid()
+        form = UserUpdateForm(data=data, instance=self.voluntario_user)
+        self.assertTrue(form.is_valid())
 
-    def test_user_update_form_atualiza_dados(self, voluntario_user):
+    def test_user_update_form_atualiza_dados(self):
         """
         CT-FA020.2: Form atualiza dados do usuário
         Resultado Esperado: Dados salvos no banco
@@ -332,16 +331,16 @@ class TestUserUpdateForm:
             'email': 'maria@test.com'
         }
 
-        form = UserUpdateForm(data=data, instance=voluntario_user)
-        assert form.is_valid()
+        form = UserUpdateForm(data=data, instance=self.voluntario_user)
+        self.assertTrue(form.is_valid())
 
         user = form.save()
 
-        assert user.first_name == 'Maria'
-        assert user.last_name == 'Santos'
-        assert user.email == 'maria@test.com'
+        self.assertEqual(user.first_name, 'Maria')
+        self.assertEqual(user.last_name, 'Santos')
+        self.assertEqual(user.email, 'maria@test.com')
 
-    def test_user_update_form_email_invalido(self, voluntario_user):
+    def test_user_update_form_email_invalido(self):
         """
         CT-FA021: Email inválido é rejeitado
         Resultado Esperado: Erro de validação
@@ -352,11 +351,11 @@ class TestUserUpdateForm:
             'email': 'email_invalido'  # Sem @
         }
 
-        form = UserUpdateForm(data=data, instance=voluntario_user)
-        assert not form.is_valid()
-        assert 'email' in form.errors
+        form = UserUpdateForm(data=data, instance=self.voluntario_user)
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
 
-    def test_user_update_form_campos_opcionais(self, voluntario_user):
+    def test_user_update_form_campos_opcionais(self):
         """
         CT-FA022: first_name e last_name são opcionais
         Resultado Esperado: Form válido sem esses campos
@@ -364,11 +363,11 @@ class TestUserUpdateForm:
         data = {
             'first_name': '',
             'last_name': '',
-            'email': voluntario_user.email
+            'email': self.voluntario_user.email
         }
 
-        form = UserUpdateForm(data=data, instance=voluntario_user)
-        assert form.is_valid()
+        form = UserUpdateForm(data=data, instance=self.voluntario_user)
+        self.assertTrue(form.is_valid())
 
     def test_user_update_form_fields_corretos(self):
         """
@@ -377,20 +376,19 @@ class TestUserUpdateForm:
         """
         form = UserUpdateForm()
 
-        assert 'first_name' in form.fields
-        assert 'last_name' in form.fields
-        assert 'email' in form.fields
-        assert 'username' not in form.fields  # Não deve permitir mudar username
-        assert 'password' not in form.fields
+        self.assertIn('first_name', form.fields)
+        self.assertIn('last_name', form.fields)
+        self.assertIn('email', form.fields)
+        self.assertNotIn('username', form.fields)  # Não deve permitir mudar username
+        self.assertNotIn('password', form.fields)
 
 
-@pytest.mark.django_db
-class TestPerfilUpdateForm:
+class TestPerfilUpdateForm(FullFixturesMixin, TestCase):
     """
     CT-FA030: Testes do formulário de atualização de Perfil
     """
 
-    def test_perfil_update_form_valido(self, voluntario_user):
+    def test_perfil_update_form_valido(self):
         """
         CT-FA030.1: Form válido com dados corretos
         Resultado Esperado: is_valid() == True
@@ -400,10 +398,10 @@ class TestPerfilUpdateForm:
             'preferencias': ['SAUDE', 'EDUCACAO']
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert form.is_valid()
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertTrue(form.is_valid())
 
-    def test_perfil_update_form_converte_preferencias_para_csv(self, voluntario_user):
+    def test_perfil_update_form_converte_preferencias_para_csv(self):
         """
         CT-FA030.2: Form converte lista de preferências em CSV
         Resultado Esperado: ['SAUDE', 'EDUCACAO'] → 'SAUDE,EDUCACAO'
@@ -413,13 +411,13 @@ class TestPerfilUpdateForm:
             'preferencias': ['SAUDE', 'EDUCACAO', 'ANIMAIS']
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert form.is_valid()
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertTrue(form.is_valid())
 
         # Verifica que clean_preferencias converteu para CSV
-        assert form.cleaned_data['preferencias'] == 'SAUDE,EDUCACAO,ANIMAIS'
+        self.assertEqual(form.cleaned_data['preferencias'], 'SAUDE,EDUCACAO,ANIMAIS')
 
-    def test_perfil_update_form_salva_preferencias_corretamente(self, voluntario_user):
+    def test_perfil_update_form_salva_preferencias_corretamente(self):
         """
         CT-FA031: Form salva preferências no banco como CSV
         Resultado Esperado: Perfil.preferencias == 'SAUDE,EDUCACAO'
@@ -429,28 +427,28 @@ class TestPerfilUpdateForm:
             'preferencias': ['SAUDE', 'MEIO_AMBIENTE']
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert form.is_valid()
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertTrue(form.is_valid())
 
         perfil = form.save()
 
-        assert perfil.preferencias == 'SAUDE,MEIO_AMBIENTE'
+        self.assertEqual(perfil.preferencias, 'SAUDE,MEIO_AMBIENTE')
 
-    def test_perfil_update_form_carrega_preferencias_existentes(self, voluntario_user):
+    def test_perfil_update_form_carrega_preferencias_existentes(self):
         """
         CT-FA032: Form carrega preferências existentes como lista
         Resultado Esperado: 'SAUDE,EDUCACAO' → ['SAUDE', 'EDUCACAO'] no initial
         """
         # Define preferências no perfil
-        voluntario_user.perfil.preferencias = 'SAUDE,EDUCACAO'
-        voluntario_user.perfil.save()
+        self.voluntario_user.perfil.preferencias = 'SAUDE,EDUCACAO'
+        self.voluntario_user.perfil.save()
 
-        form = PerfilUpdateForm(instance=voluntario_user.perfil)
+        form = PerfilUpdateForm(instance=self.voluntario_user.perfil)
 
         # Verifica que preferências foram carregadas como lista
-        assert form.initial['preferencias'] == ['SAUDE', 'EDUCACAO']
+        self.assertEqual(form.initial['preferencias'], ['SAUDE', 'EDUCACAO'])
 
-    def test_perfil_update_form_preferencias_vazias(self, voluntario_user):
+    def test_perfil_update_form_preferencias_vazias(self):
         """
         CT-FA033: Form aceita preferências vazias
         Resultado Esperado: Lista vazia → string vazia
@@ -460,11 +458,11 @@ class TestPerfilUpdateForm:
             'preferencias': []  # Nenhuma selecionada
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert form.is_valid()
-        assert form.cleaned_data['preferencias'] == ''
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(form.cleaned_data['preferencias'], '')
 
-    def test_perfil_update_form_categorias_validas(self, voluntario_user):
+    def test_perfil_update_form_categorias_validas(self):
         """
         CT-FA034: Form aceita todas categorias definidas em CATEGORIA_CHOICES
         Resultado Esperado: Todas as 5 categorias são válidas
@@ -476,10 +474,10 @@ class TestPerfilUpdateForm:
             'preferencias': categorias
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert form.is_valid()
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertTrue(form.is_valid())
 
-    def test_perfil_update_form_categoria_invalida(self, voluntario_user):
+    def test_perfil_update_form_categoria_invalida(self):
         """
         CT-FA035: Form rejeita categoria não definida
         Resultado Esperado: Erro de validação
@@ -489,9 +487,9 @@ class TestPerfilUpdateForm:
             'preferencias': ['CATEGORIA_INVALIDA']
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert not form.is_valid()
-        assert 'preferencias' in form.errors
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertFalse(form.is_valid())
+        self.assertIn('preferencias', form.errors)
 
     def test_perfil_update_form_campos_corretos(self):
         """
@@ -500,10 +498,10 @@ class TestPerfilUpdateForm:
         """
         form = PerfilUpdateForm()
 
-        assert 'endereco' in form.fields
-        assert 'preferencias' in form.fields
+        self.assertIn('endereco', form.fields)
+        self.assertIn('preferencias', form.fields)
 
-    def test_perfil_update_form_campos_opcionais(self, voluntario_user):
+    def test_perfil_update_form_campos_opcionais(self):
         """
         CT-FA037: Todos os campos são opcionais
         Resultado Esperado: Form válido com campos vazios
@@ -513,8 +511,8 @@ class TestPerfilUpdateForm:
             'preferencias': []
         }
 
-        form = PerfilUpdateForm(data=data, instance=voluntario_user.perfil)
-        assert form.is_valid()
+        form = PerfilUpdateForm(data=data, instance=self.voluntario_user.perfil)
+        self.assertTrue(form.is_valid())
 
     def test_perfil_update_form_widget_checkbox(self):
         """
@@ -524,4 +522,4 @@ class TestPerfilUpdateForm:
         form = PerfilUpdateForm()
 
         from django import forms
-        assert isinstance(form.fields['preferencias'].widget, forms.CheckboxSelectMultiple)
+        self.assertIsInstance(form.fields['preferencias'].widget, forms.CheckboxSelectMultiple)
