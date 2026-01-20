@@ -12,14 +12,14 @@ C:\Users\Angelica\Documents\GitHub\CommunityLink\deps\communitylink\
 ### Método 1: Serviço Dedicado (Mais Rápido) RECOMENDADO
 
 ```bash
-# Rode apenas testes básicos (models + forms)
-docker-compose run --rm tests-basic
+# Rode todos os testes
+docker-compose run --rm tests
 ```
 
 **O que acontece:**
 - Container inicia
-- Roda pytest nos arquivos test_models.py e test_forms.py
-- Mostra resultados
+- Roda testes usando Django unittest (manage.py test)
+- Gera relatórios de cobertura
 - Container é removido automaticamente (--rm)
 
 ### Método 2: Usando o Container Web
@@ -29,7 +29,7 @@ docker-compose run --rm tests-basic
 docker-compose up -d web
 
 # 2. Execute os testes no container
-docker-compose exec web pytest acoes/tests/test_models.py acoes/tests/test_forms.py -v
+docker-compose exec web python manage.py test acoes.tests -v 2
 ```
 
 ### Método 3: Entrar no Container (Para Explorar)
@@ -39,9 +39,9 @@ docker-compose exec web pytest acoes/tests/test_models.py acoes/tests/test_forms
 docker-compose exec web bash
 
 # 2. Dentro do container, rode:
-pytest acoes/tests/test_models.py -v
-pytest acoes/tests/test_forms.py -v
-python run_tests_basicos.py
+python manage.py test acoes.tests.test_models -v 2
+python manage.py test acoes.tests.test_forms -v 2
+python manage.py test acoes.tests
 
 # 3. Saia
 exit
@@ -53,32 +53,32 @@ exit
 
 ```bash
 # Apenas modelos
-docker-compose exec web pytest acoes/tests/test_models.py -v
+docker-compose exec web python manage.py test acoes.tests.test_models
 
 # Apenas formulários
-docker-compose exec web pytest acoes/tests/test_forms.py -v
+docker-compose exec web python manage.py test acoes.tests.test_forms
 
 # Um teste específico
-docker-compose exec web pytest acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida -v
+docker-compose exec web python manage.py test acoes.tests.test_models.TestAcaoModel.test_criar_acao_valida
 
 # Uma classe de testes
-docker-compose exec web pytest acoes/tests/test_models.py::TestAcaoModel -v
+docker-compose exec web python manage.py test acoes.tests.test_models.TestAcaoModel
 ```
 
 ### Rodar com Cobertura
 
 ```bash
 # Com relatório HTML
-docker-compose exec web pytest acoes/tests/test_models.py acoes/tests/test_forms.py --cov=acoes --cov-report=html
+docker-compose exec web sh -c "coverage run --source='acoes' manage.py test acoes.tests && coverage html"
 
 # Ver o relatório (arquivo será criado em htmlcov/index.html)
 # Abra no navegador: C:\Users\Angelica\Documents\GitHub\CommunityLink\deps\communitylink\htmlcov\index.html
 ```
 
-### Rodar Todos os Testes (Quando Implementar Permissões)
+### Rodar Todos os Testes
 
 ```bash
-# Este vai tentar rodar TODOS os 120 testes
+# Roda todos os testes com cobertura
 docker-compose run --rm tests
 ```
 
@@ -137,10 +137,10 @@ docker-compose exec web python manage.py collectstatic
 docker-compose up -d web
 
 # Tente novamente
-docker-compose exec web pytest acoes/tests/test_models.py -v
+docker-compose exec web python manage.py test acoes.tests.test_models
 ```
 
-### Erro: "No such file or directory: pytest"
+### Erro: "coverage: command not found"
 **Solução:** Dependências não instaladas no container
 ```bash
 # Reconstrua a imagem
@@ -153,13 +153,13 @@ exit
 ```
 
 ### Erro: "django.core.exceptions.ImproperlyConfigured"
-**Solução:** Variável de ambiente DJANGO_SETTINGS_MODULE
+**Solução:** Verifique o settings.py
 ```bash
-# Verifique o pytest.ini
-docker-compose exec web cat pytest.ini
+# Verifique o settings.py
+docker-compose exec web cat communitylink/settings.py
 
-# Ou rode com variável explícita
-docker-compose exec web bash -c "DJANGO_SETTINGS_MODULE=communitylink.settings pytest acoes/tests/test_models.py -v"
+# Rode com variável explícita se necessário
+docker-compose exec web bash -c "DJANGO_SETTINGS_MODULE=communitylink.settings python manage.py test acoes.tests"
 ```
 
 ### Erro: "No such table: acoes_acao"
@@ -180,26 +180,32 @@ docker-compose exec web cat communitylink/settings.py | grep USE_TZ
 
 ##  Interpretando Resultados
 
-### Sucesso 
+### Sucesso
 ```
-acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida PASSED [ 10%]
-acoes/tests/test_models.py::TestAcaoModel::test_str_retorna_titulo PASSED [ 20%]
+test_criar_acao_valida (acoes.tests.test_models.TestAcaoModel) ... ok
+test_str_retorna_titulo (acoes.tests.test_models.TestAcaoModel) ... ok
 ...
-======================== 37 passed in 2.45s ========================
+----------------------------------------------------------------------
+Ran 253 tests in 12.345s
+
+OK
 ```
 
 ### Falha
 ```
-acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida FAILED [ 10%]
+test_criar_acao_valida (acoes.tests.test_models.TestAcaoModel) ... FAIL
 
-FAILED acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida - AssertionError: ...
+======================================================================
+FAIL: test_criar_acao_valida (acoes.tests.test_models.TestAcaoModel)
+----------------------------------------------------------------------
+AssertionError: ...
 ```
 
 **O que fazer:**
 1. Leia a mensagem de erro completa
-2. Use `-vv` para mais detalhes:
+2. Use `-v 3` para mais detalhes:
    ```bash
-   docker-compose exec web pytest acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida -vv
+   docker-compose exec web python manage.py test acoes.tests.test_models.TestAcaoModel.test_criar_acao_valida -v 3
    ```
 3. Entre no container para investigar:
    ```bash
@@ -219,9 +225,9 @@ FAILED acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida - Asser
 
 2. **Trabalhe no código normalmente**
 
-3. **Rode os testes básicos frequentemente**
+3. **Rode os testes frequentemente**
    ```bash
-   docker-compose run --rm tests-basic
+   docker-compose exec web python manage.py test acoes.tests
    ```
 
 4. **Se tudo passar, commit!**
@@ -235,64 +241,24 @@ FAILED acoes/tests/test_models.py::TestAcaoModel::test_criar_acao_valida - Asser
 
 ```bash
 # 1. Rode os testes
-docker-compose run --rm tests-basic
+docker-compose exec web python manage.py test acoes.tests
 
 # 2. Se passou, veja cobertura
-docker-compose exec web pytest acoes/tests/test_models.py acoes/tests/test_forms.py --cov=acoes --cov-report=term
+docker-compose exec web sh -c "coverage run --source='acoes' manage.py test acoes.tests && coverage report"
 
 # 3. Se cobertura > 80%, está ok!
 ```
-
-## Aliases Úteis (Opcional)
-
-Adicione ao seu `.bashrc` ou `.zshrc` (se usar Linux/Mac) ou crie um script .bat (Windows):
-
-```bash
-# Aliases para facilitar
-alias dtest='docker-compose run --rm tests-basic'
-alias dtest-all='docker-compose run --rm tests'
-alias dshell='docker-compose exec web python manage.py shell'
-alias dmigrate='docker-compose exec web python manage.py migrate'
-```
-
-**No Windows**, crie um arquivo `test.bat`:
-```batch
-@echo off
-docker-compose run --rm tests-basic
-```
-
-Depois rode apenas:
-```bash
-test.bat
-```
-
-## Comando Mais Simples Possível
-
-**Para rodar os testes básicos agora:**
-
-```bash
-docker-compose run --rm tests-basic
-```
-
-**Isso é tudo que você precisa!** 
-
----
 
 ## Resumo dos Comandos
 
 | O que fazer | Comando |
 |-------------|---------|
-| **Rodar testes básicos** | `docker-compose run --rm tests-basic` |
-| Rodar todos os testes | `docker-compose run --rm tests` |
-| Rodar teste específico | `docker-compose exec web pytest acoes/tests/test_models.py -v` |
-| Ver cobertura | `docker-compose exec web pytest acoes/tests/test_models.py acoes/tests/test_forms.py --cov=acoes` |
+| **Rodar testes** | `docker-compose exec web python manage.py test acoes.tests` |
+| Rodar todos os testes com cobertura | `docker-compose run --rm tests` |
+| Rodar teste específico | `docker-compose exec web python manage.py test acoes.tests.test_models` |
+| Ver cobertura | `docker-compose exec web sh -c "coverage run --source='acoes' manage.py test acoes.tests && coverage report"` |
 | Entrar no container | `docker-compose exec web bash` |
 | Ver logs | `docker-compose logs web` |
 | Rodar migrations | `docker-compose exec web python manage.py migrate` |
 
 ---
-
-**Dúvidas?** Comece com:
-```bash
-docker-compose run --rm tests-basic
-```

@@ -10,6 +10,6 @@ services:
   # Serviço para rodar TODOS os testes
   tests:
     build: .
-    command: pytest --cov=. --cov-report=xml --cov-report=html
+    command: sh -c "coverage run --source='acoes' manage.py test acoes.tests && coverage xml && coverage html"
     volumes:
       - .:/app

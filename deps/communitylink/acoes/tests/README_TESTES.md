@@ -1,7 +1,5 @@
 # Guia de Testes - Unittest (Django TestCase)
 
-## Status Atual da Implementação
-
 - Models (Acao, Inscricao, Notificacao)
 - CRUD de Ações
 - Inscrições e Notificações
@@ -30,11 +28,6 @@ acoes/tests/
 ```
 
 **Total:** ~253 testes em 10 arquivos
-
-### Arquivos de Referência (pytest - obsoletos)
-
-- `conftest.py` - Fixtures antigas do pytest (referência apenas)
-- `conftest_simple.py` - Fixtures simplificadas do pytest (referência apenas)
 
 ## Como Rodar os Testes
 
@@ -254,80 +247,6 @@ def test_form_valido(self):
 - **Métodos de teste:** ~253
 - **Linhas de código:** ~5.000
 - **Cobertura esperada:** > 90%
-
-## Conversão de pytest para unittest
-
-Este projeto foi convertido de pytest para unittest nativo do Django.
-
-### Principais Mudanças:
-
-| Aspecto | Pytest (Antigo) | Unittest (Atual) |
-|---------|-----------------|------------------|
-| **Imports** | `import pytest` | `from django.test import TestCase` |
-| **Decoradores** | `@pytest.mark.django_db` | Não necessário (TestCase cuida) |
-| **Fixtures** | Parâmetros das funções | Mixins com `setUpTestData()` |
-| **Asserções** | `assert a == b` | `self.assertEqual(a, b)` |
-| **Client** | `def test(client):` | `self.client` (do TestCase) |
-| **Exceções** | `pytest.raises` | `self.assertRaises` |
-| **Parametrizados** | `@pytest.mark.parametrize` | `for ... with self.subTest()` |
-
-### Vantagens do Unittest:
-
-- ✅ Nativo do Django (sem dependências extras)
-- ✅ Melhor integração com Django
-- ✅ `setUpTestData()` mais rápido que fixtures pytest
-- ✅ Client HTTP já incluído no TestCase
-- ✅ Sintaxe mais explícita
-
-## Troubleshooting
-
-### Erro: "No module named 'pytest'"
-**Solução:** Este projeto não usa mais pytest. Use `python manage.py test` ao invés de `pytest`.
-
-### Erro: "OperationalError: no such table"
-**Solução:** Execute as migrações antes dos testes:
-```bash
-python manage.py migrate
-python manage.py test acoes.tests
-```
-
-### Erro: "Group matching query does not exist"
-**Solução:** O grupo "Organizadores" é criado automaticamente nos testes. Se persistir, verifique o `test_base.py`.
-
-### Testes muito lentos
-**Solução:** Use `--parallel` para rodar testes em paralelo:
-```bash
-python manage.py test acoes.tests --parallel
-```
-
-## Contribuindo com Novos Testes
-
-### Template para Novos Testes
-
-```python
-from django.test import TestCase
-from .test_base import FullFixturesMixin
-
-class TestMinhaNovaFeature(FullFixturesMixin, TestCase):
-    """
-    CT-XXX: Descrição da feature sendo testada
-    Referência: Documento de Casos de Teste
-    """
-
-    def test_comportamento_esperado(self):
-        """
-        CT-XXX.1: Descrição específica do teste
-        Resultado Esperado: O que deve acontecer
-        """
-        # Arrange (preparar)
-        data = {...}
-
-        # Act (agir)
-        resultado = alguma_funcao(data)
-
-        # Assert (verificar)
-        self.assertEqual(resultado, esperado)
-```
 
 ### Boas Práticas
 
