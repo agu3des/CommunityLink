@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from acoes.models import Acao, Inscricao
 from .test_base import FullFixturesMixin
 
@@ -76,7 +76,7 @@ class TestPermissoesOrganizador(FullFixturesMixin, TestCase):
         acao_outro = Acao.objects.create(
             titulo='Ação de Outro',
             descricao='Teste',
-            data='2025-12-31 10:00:00',
+            data=timezone.make_aware(datetime(2025, 12, 31, 10, 0, 0)),
             local='Local',
             numero_vagas=10,
             organizador=outro_org
@@ -100,7 +100,7 @@ class TestPermissoesOrganizador(FullFixturesMixin, TestCase):
         acao_outro = Acao.objects.create(
             titulo='Ação de Outro 2',
             descricao='Teste',
-            data='2025-12-31 10:00:00',
+            data=timezone.make_aware(datetime(2025, 12, 31, 10, 0, 0)),
             local='Local',
             numero_vagas=10,
             organizador=outro_org
@@ -125,7 +125,7 @@ class TestPermissoesOrganizador(FullFixturesMixin, TestCase):
         acao_outro = Acao.objects.create(
             titulo='Ação de Outro 3',
             descricao='Teste',
-            data='2025-12-31 10:00:00',
+            data=timezone.make_aware(datetime(2025, 12, 31, 10, 0, 0)),
             local='Local',
             numero_vagas=10,
             organizador=outro_org

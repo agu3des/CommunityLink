@@ -1,4 +1,4 @@
-from django.urls import path, reverse_lazy
+from django.urls import path, reverse_lazy, include
 from django.contrib.auth import views as auth_views
 from . import views
 
@@ -69,4 +69,7 @@ urlpatterns = [
              template_name='acoes/password_reset_complete.html'
          ),
          name='password_reset_complete'),
+
+    # APIs REST
+    path("api/", include("acoes.api_urls")),
 ]

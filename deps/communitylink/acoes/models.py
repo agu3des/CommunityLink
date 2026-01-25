@@ -70,6 +70,12 @@ class Acao(models.Model):
         """ Retorna a URL para a página de detalhes desta ação. """
         return reverse('acoes:acao_detail', kwargs={'pk': self.pk})
 
+    def save(self, *args, **kwargs):
+        #garante que a data seja sempre timezone-aware
+        if self.data and timezone.is_naive(self.data):
+            self.data = timezone.make_aware(self.data)
+        super().save(*args, **kwargs)
+
 
 class Inscricao(models.Model):
     """ Este modelo representa a 'solicitação' de um voluntário em uma ação. """
