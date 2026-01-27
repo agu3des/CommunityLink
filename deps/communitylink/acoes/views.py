@@ -7,7 +7,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.http import HttpResponseNotAllowed
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from .models import Acao, Inscricao, Notificacao
+from .models import Acao, Inscricao, Notificacao, Perfil
 from .forms import AcaoForm, SignUpForm, SignInForm, UserUpdateForm, PerfilUpdateForm
 from django.db.models import Q # Importante para filtros complexos
 import datetime # Importante para o filtro de data

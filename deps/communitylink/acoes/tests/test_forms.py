@@ -7,7 +7,7 @@ Este arquivo testa a validação e comportamento dos formulários:
 
 from django.test import TestCase
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from acoes.forms import AcaoForm
 from acoes.models import Acao
 from .test_base import FullFixturesMixin
@@ -294,7 +294,7 @@ class TestAcaoForm(FullFixturesMixin, TestCase):
         data = {
             'titulo': 'Título',
             'descricao': 'Descrição',
-            'data': '2025-12-31T14:30',  # Formato datetime-local
+            'data': (timezone.now() + timedelta(days=60)).strftime('%Y-%m-%dT%H:%M'),  # Formato datetime-local
             'local': 'Local',
             'numero_vagas': 10,
             'categoria': 'SAUDE'

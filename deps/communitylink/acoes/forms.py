@@ -2,13 +2,14 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from .models import Acao, Perfil
 
 class AcaoForm(forms.ModelForm):
     # Configura o campo 'data' para usar um widget de data/hora bonitinho
     data = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
-        input_formats=['%Y-%m-%dT%H:%M']
+        input_formats=['%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M:%S']
     )
 
     class Meta:
@@ -17,6 +18,12 @@ class AcaoForm(forms.ModelForm):
         fields = ['titulo', 'descricao', 'data', 'local', 'categoria', 'numero_vagas']
         # O 'organizador' será definido automaticamente na view
         # Os 'voluntarios' serão gerenciados pelas inscrições
+
+    def clean_data(self):
+        data = self.cleaned_data['data']
+        if data and timezone.is_naive(data):
+            data = timezone.make_aware(data)
+        return data
 
 
 class SignUpForm(UserCreationForm):
