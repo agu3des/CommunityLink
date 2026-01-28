@@ -384,8 +384,7 @@ class TestPermissoesEspeciais(FullFixturesMixin, TestCase):
         CT-P041: Usuário vê apenas suas próprias inscrições
         Resultado Esperado: Apenas inscrições do usuário logado
         """
-        # Cria inscrição do voluntário logado
-        Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
+        # inscricao_pendente já existe via setUp para (acao_futura, voluntario_user)
 
         # Cria inscrição de outro voluntário
         outro_vol = User.objects.create_user('outro_vol', 'outro@test.com', 'pass')
@@ -396,8 +395,9 @@ class TestPermissoesEspeciais(FullFixturesMixin, TestCase):
         inscricoes = response.context['inscricoes']
 
         # Deve ter apenas 1 inscrição (do usuário logado)
-        self.assertEqual(inscricoes.count(), 1)
-        self.assertEqual(inscricoes.first().voluntario, self.voluntario_user)
+        inscricoes_list = list(inscricoes)
+        self.assertEqual(len(inscricoes_list), 1)
+        self.assertEqual(inscricoes_list[0].voluntario, self.voluntario_user)
 
     def test_usuario_pode_ver_apenas_proprias_acoes(self):
         """

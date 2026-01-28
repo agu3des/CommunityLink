@@ -48,6 +48,9 @@ class TestAcaoApplyView(FullFixturesMixin, TestCase):
         CT-V101: Voluntário se inscreve com sucesso em ação
         Resultado Esperado: Inscrição criada com status PENDENTE
         """
+        # Remove inscrição existente do setUp para testar criação nova
+        self.inscricao_pendente.delete()
+
         url = reverse('acoes:acao_apply', args=[self.acao_futura.pk])
         response = self.client_logged_voluntario.post(url)
 
@@ -98,6 +101,9 @@ class TestAcaoApplyView(FullFixturesMixin, TestCase):
         CT-V105: Inscrição cria notificação para o organizador
         Resultado Esperado: Notificação criada para o organizador
         """
+        # Remove inscrição existente do setUp para testar criação nova
+        self.inscricao_pendente.delete()
+
         url = reverse('acoes:acao_apply', args=[self.acao_futura.pk])
         self.client_logged_voluntario.post(url)
 
@@ -267,8 +273,7 @@ class TestMinhasInscricoesView(FullFixturesMixin, TestCase):
         CT-V120.2: Mostra apenas inscrições do voluntário logado
         Resultado Esperado: Apenas inscrições do usuário na lista
         """
-        # Cria inscrição do voluntário logado
-        inscricao1 = Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
+        # inscricao_pendente já existe via setUp para (acao_futura, voluntario_user)
 
         # Cria inscrição de outro voluntário
         outro_vol = User.objects.create_user('outro_vol', 'outro@test.com', 'pass')
@@ -278,7 +283,7 @@ class TestMinhasInscricoesView(FullFixturesMixin, TestCase):
         response = self.client_logged_voluntario.get(url)
         inscricoes = response.context['inscricoes']
 
-        self.assertIn(inscricao1, inscricoes)
+        self.assertIn(self.inscricao_pendente, inscricoes)
         self.assertNotIn(inscricao2, inscricoes)
 
     def test_inscricoes_ordenadas_por_data_acao(self):
@@ -289,7 +294,10 @@ class TestMinhasInscricoesView(FullFixturesMixin, TestCase):
         from django.utils import timezone
         from datetime import timedelta
 
-        # Cria 3 ações com datas diferentes
+        # Remove inscrição existente para teste limpo de ordenação
+        self.inscricao_pendente.delete()
+
+        # Cria 2 ações com datas diferentes
         acao1 = Acao.objects.create(
             titulo='Ação em 30 dias',
             descricao='Teste',
@@ -569,8 +577,9 @@ class TestNotificacoesAutomaticas(FullFixturesMixin, TestCase):
         CT-V145.1: Editar ação cria notificação para inscritos
         Resultado Esperado: Inscritos aceitos e pendentes são notificados
         """
-        # Cria inscrições
-        inscr_aceita = Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user, status='ACEITO')
+        # Atualiza inscrição existente do setUp para status ACEITO
+        self.inscricao_pendente.status = 'ACEITO'
+        self.inscricao_pendente.save()
 
         from django.contrib.auth.models import User
         vol2 = User.objects.create_user('vol2', 'vol2@test.com', 'pass')
@@ -604,8 +613,9 @@ class TestNotificacoesAutomaticas(FullFixturesMixin, TestCase):
         CT-V145.2: Deletar ação cria notificação para inscritos
         Resultado Esperado: Todos inscritos são notificados
         """
-        # Cria inscrição
-        inscricao = Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user, status='ACEITO')
+        # Atualiza inscrição existente do setUp para status ACEITO
+        self.inscricao_pendente.status = 'ACEITO'
+        self.inscricao_pendente.save()
 
         count_antes = Notificacao.objects.filter(destinatario=self.voluntario_user).count()
 
@@ -625,8 +635,9 @@ class TestNotificacoesAutomaticas(FullFixturesMixin, TestCase):
         CT-V145.3: Inscrição rejeitada não recebe notificação de edição
         Resultado Esperado: Apenas ACEITO e PENDENTE são notificados
         """
-        # Cria inscrição rejeitada
-        inscricao = Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user, status='REJEITADO')
+        # Atualiza inscrição existente do setUp para status REJEITADO
+        self.inscricao_pendente.status = 'REJEITADO'
+        self.inscricao_pendente.save()
 
         count_antes = Notificacao.objects.filter(destinatario=self.voluntario_user).count()
 
@@ -651,8 +662,9 @@ class TestNotificacoesAutomaticas(FullFixturesMixin, TestCase):
         CT-V145.4: Reinscrever após cancelamento cria nova notificação
         Resultado Esperado: Organizador é notificado novamente
         """
-        # Cria e cancela inscrição
-        inscricao = Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user, status='CANCELADO')
+        # Atualiza inscrição existente do setUp para status CANCELADO
+        self.inscricao_pendente.status = 'CANCELADO'
+        self.inscricao_pendente.save()
 
         count_antes = Notificacao.objects.filter(destinatario=self.organizador_user).count()
 
@@ -687,8 +699,8 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         CT-V150.2: Cancelamento requer método POST
         Resultado Esperado: Redirect em GET (deve mostrar confirmação)
         """
-        inscricao = Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        # Usa inscricao_pendente do setUp
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         response = self.client_logged_voluntario.get(url)
 
         # Como não há template de confirmação, provavelmente vai dar erro ou redirect
@@ -700,13 +712,8 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         CT-V151: Voluntário cancela inscrição com status PENDENTE
         Resultado Esperado: Status muda para CANCELADO
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='PENDENTE'
-        )
-
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        # Usa inscricao_pendente do setUp (já é PENDENTE)
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         response = self.client_logged_voluntario.post(url)
 
         # Verifica redirect
@@ -714,36 +721,30 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         self.assertEqual(response.url, reverse('acoes:minhas_inscricoes'))
 
         # Verifica que status mudou
-        inscricao.refresh_from_db()
-        self.assertEqual(inscricao.status, 'CANCELADO')
+        self.inscricao_pendente.refresh_from_db()
+        self.assertEqual(self.inscricao_pendente.status, 'CANCELADO')
 
     def test_voluntario_cancela_inscricao_aceita(self):
         """
         CT-V152: Voluntário cancela inscrição com status ACEITO
         Resultado Esperado: Status muda para CANCELADO
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='ACEITO'
-        )
+        # Atualiza inscrição existente do setUp para ACEITO
+        self.inscricao_pendente.status = 'ACEITO'
+        self.inscricao_pendente.save()
 
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         response = self.client_logged_voluntario.post(url)
 
-        inscricao.refresh_from_db()
-        self.assertEqual(inscricao.status, 'CANCELADO')
+        self.inscricao_pendente.refresh_from_db()
+        self.assertEqual(self.inscricao_pendente.status, 'CANCELADO')
 
     def test_cancelamento_remove_notificacao_do_organizador_se_pendente(self):
         """
         CT-V153: Cancelar inscrição PENDENTE remove notificação do organizador
         Resultado Esperado: Notificação é deletada
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='PENDENTE'
-        )
+        # Usa inscricao_pendente do setUp (já é PENDENTE)
 
         # Cria notificação para o organizador (como se tivesse sido criada na inscrição)
         Notificacao.objects.create(
@@ -759,7 +760,7 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         ).exists())
 
         # Cancela inscrição
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         self.client_logged_voluntario.post(url)
 
         # Verifica que notificação foi deletada
@@ -774,17 +775,15 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         CT-V154: Cancelar inscrição ACEITO cria notificação para organizador
         Resultado Esperado: Nova notificação criada
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='ACEITO'
-        )
+        # Atualiza inscrição existente do setUp para ACEITO
+        self.inscricao_pendente.status = 'ACEITO'
+        self.inscricao_pendente.save()
 
         # Conta notificações antes
         count_antes = Notificacao.objects.filter(destinatario=self.organizador_user).count()
 
         # Cancela inscrição
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         self.client_logged_voluntario.post(url)
 
         # Verifica que nova notificação foi criada
@@ -833,21 +832,16 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         url = reverse('acoes:inscricao_cancel', args=[inscricao_outro.pk])
 
         # Deve dar erro 404 (get_object_or_404 com voluntario=request.user)
-        with self.assertRaises(Exception):
-            response = self.client_logged_voluntario.post(url)
+        response = self.client_logged_voluntario.post(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_cancelamento_exibe_mensagem_sucesso(self):
         """
         CT-V157: Cancelamento exibe mensagem de sucesso
         Resultado Esperado: Mensagem no sistema de messages
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='PENDENTE'
-        )
-
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        # Usa inscricao_pendente do setUp
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         response = self.client_logged_voluntario.post(url, follow=True)
 
         # Verifica que tem mensagem
@@ -860,13 +854,8 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         CT-V158: Cancelamento redireciona para minhas inscrições
         Resultado Esperado: Redirect correto
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='PENDENTE'
-        )
-
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        # Usa inscricao_pendente do setUp
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         response = self.client_logged_voluntario.post(url)
 
         self.assertEqual(response.status_code, 302)
@@ -877,14 +866,12 @@ class TestInscricaoCancelView(FullFixturesMixin, TestCase):
         CT-V159: É possível cancelar inscrição rejeitada (para limpar histórico)
         Resultado Esperado: Status muda para CANCELADO
         """
-        inscricao = Inscricao.objects.create(
-            acao=self.acao_futura,
-            voluntario=self.voluntario_user,
-            status='REJEITADO'
-        )
+        # Atualiza inscrição existente do setUp para REJEITADO
+        self.inscricao_pendente.status = 'REJEITADO'
+        self.inscricao_pendente.save()
 
-        url = reverse('acoes:inscricao_cancel', args=[inscricao.pk])
+        url = reverse('acoes:inscricao_cancel', args=[self.inscricao_pendente.pk])
         response = self.client_logged_voluntario.post(url)
 
-        inscricao.refresh_from_db()
-        self.assertEqual(inscricao.status, 'CANCELADO')
+        self.inscricao_pendente.refresh_from_db()
+        self.assertEqual(self.inscricao_pendente.status, 'CANCELADO')

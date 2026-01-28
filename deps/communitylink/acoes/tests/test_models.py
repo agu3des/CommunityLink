@@ -136,14 +136,15 @@ class TestInscricaoModel(FullFixturesMixin, TestCase):
         CT-M010.1: Criar inscrição com ação e voluntário válidos
         Resultado Esperado: Inscrição criada com status PENDENTE
         """
+        novo_vol = User.objects.create_user('novo_vol_inscr', 'novovol@test.com', 'pass')
         inscricao = Inscricao.objects.create(
             acao=self.acao_futura,
-            voluntario=self.voluntario_user
+            voluntario=novo_vol
         )
 
         self.assertEqual(inscricao.status, 'PENDENTE')
         self.assertEqual(inscricao.acao, self.acao_futura)
-        self.assertEqual(inscricao.voluntario, self.voluntario_user)
+        self.assertEqual(inscricao.voluntario, novo_vol)
         self.assertIsNotNone(inscricao.data_inscricao)
 
     def test_status_choices_validos(self):
@@ -168,9 +169,7 @@ class TestInscricaoModel(FullFixturesMixin, TestCase):
         CT-M011: Usuário não pode se inscrever 2x na mesma ação
         Resultado Esperado: IntegrityError ao tentar duplicar
         """
-        # Primeira inscrição
-        Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
-
+        # Primeira inscrição já existe via setUp (self.inscricao_pendente)
         # Segunda inscrição deve falhar
         with self.assertRaises(IntegrityError):
             Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
@@ -197,8 +196,8 @@ class TestInscricaoModel(FullFixturesMixin, TestCase):
         for acao in acoes:
             Inscricao.objects.create(acao=acao, voluntario=self.voluntario_user)
 
-        # Verifica que o voluntário tem 3 inscrições
-        self.assertEqual(Inscricao.objects.filter(voluntario=self.voluntario_user).count(), 3)
+        # Verifica que o voluntário tem 3 novas inscrições + 1 do setUp
+        self.assertEqual(Inscricao.objects.filter(voluntario=self.voluntario_user).count(), 4)
 
     def test_str_representation(self):
         """

@@ -200,7 +200,6 @@ class TestPerfilView(FullFixturesMixin, TestCase):
             'last_name': 'Santos',
             'email': 'maria@test.com',
             'endereco': '',
-            'preferencias': ''
         }
 
         response = self.client_logged_voluntario.post(url, data)
@@ -226,7 +225,6 @@ class TestPerfilView(FullFixturesMixin, TestCase):
             'last_name': self.voluntario_user.last_name or '',
             'email': self.voluntario_user.email,
             'endereco': 'Nova Rua, 456',
-            'preferencias': ''
         }
 
         response = self.client_logged_voluntario.post(url, data)
@@ -292,7 +290,6 @@ class TestPerfilView(FullFixturesMixin, TestCase):
             'last_name': '',
             'email': self.voluntario_user.email,
             'endereco': 'Endereco Original',  # Mantém
-            'preferencias': ''
         }
 
         response = self.client_logged_voluntario.post(url, data)
@@ -314,7 +311,6 @@ class TestPerfilView(FullFixturesMixin, TestCase):
             'last_name': '',
             'email': 'email_invalido',  # Email inválido
             'endereco': '',
-            'preferencias': ''
         }
 
         response = self.client_logged_voluntario.post(url, data)
@@ -337,7 +333,7 @@ class TestPerfilView(FullFixturesMixin, TestCase):
             'last_name': '',
             'email': self.organizador_user.email,
             'endereco': 'Endereco Org',
-            'preferencias': 'SAUDE'
+            'preferencias': ['SAUDE']
         }
 
         response = self.client_logged_organizador.post(url, data)

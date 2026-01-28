@@ -53,40 +53,13 @@ class TestAcaoListView(FullFixturesMixin, TestCase):
         CT-V001.3: Ações ordenadas por data (mais próximas primeiro)
         Resultado Esperado: Ordem crescente de data
         """
-        # Cria 3 ações com datas diferentes
-        acao1 = Acao.objects.create(
-            titulo='Ação em 30 dias',
-            descricao='Teste',
-            data=timezone.now() + timedelta(days=30),
-            local='Local',
-            numero_vagas=10,
-            organizador=self.organizador_user
-        )
-        acao2 = Acao.objects.create(
-            titulo='Ação em 7 dias',
-            descricao='Teste',
-            data=timezone.now() + timedelta(days=7),
-            local='Local',
-            numero_vagas=10,
-            organizador=self.organizador_user
-        )
-        acao3 = Acao.objects.create(
-            titulo='Ação em 15 dias',
-            descricao='Teste',
-            data=timezone.now() + timedelta(days=15),
-            local='Local',
-            numero_vagas=10,
-            organizador=self.organizador_user
-        )
-
         url = reverse('acoes:acao_list')
         response = self.client.get(url)
         acoes = list(response.context['acoes'])
 
-        # Verifica ordem: 7 dias, 15 dias, 30 dias
-        self.assertEqual(acoes[0], acao2)
-        self.assertEqual(acoes[1], acao3)
-        self.assertEqual(acoes[2], acao1)
+        # Verifica que todas as ações estão em ordem crescente de data
+        datas = [a.data for a in acoes]
+        self.assertEqual(datas, sorted(datas))
 
     def test_filtro_por_categoria(self):
         """
@@ -179,11 +152,7 @@ class TestAcaoDetailView(FullFixturesMixin, TestCase):
         CT-V010.3: Mostra se usuário logado já está inscrito
         Resultado Esperado: ja_inscrito=True quando há inscrição
         """
-        from acoes.models import Inscricao
-
-        # Cria inscrição
-        Inscricao.objects.create(acao=self.acao_futura, voluntario=self.voluntario_user)
-
+        # inscricao_pendente já existe via setUp para (acao_futura, voluntario_user)
         url = reverse('acoes:acao_detail', args=[self.acao_futura.pk])
         response = self.client_logged_voluntario.get(url)
 
@@ -192,12 +161,12 @@ class TestAcaoDetailView(FullFixturesMixin, TestCase):
     def test_detalhes_indica_organizador(self):
         """
         CT-V010.4: Indica se usuário logado é o organizador
-        Resultado Esperado: is_organizador=True para organizador da ação
+        Resultado Esperado: is_owner=True para organizador da ação
         """
         url = reverse('acoes:acao_detail', args=[self.acao_futura.pk])
         response = self.client_logged_organizador.get(url)
 
-        self.assertTrue(response.context['is_organizador'])
+        self.assertTrue(response.context['is_owner'])
 
 
 class TestAcaoCreateView(FullFixturesMixin, TestCase):

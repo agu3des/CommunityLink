@@ -486,8 +486,8 @@ class TestComentariosNotasView(FullFixturesMixin, TestCase):
         }
 
         # Deve dar erro 404 (get_object_or_404 com organizador=request.user)
-        with self.assertRaises(Exception):  # Pode ser Http404
-            response = self.client_logged_organizador.post(url, data)
+        response = self.client_logged_organizador.post(url, data)
+        self.assertEqual(response.status_code, 404)
 
     def test_voluntario_nao_pode_salvar_comentario_de_inscricao_de_outro(self):
         """
@@ -517,9 +517,9 @@ class TestComentariosNotasView(FullFixturesMixin, TestCase):
             'comentario': 'Tentando hackear'
         }
 
-        # Deve dar erro 404
-        with self.assertRaises(Exception):
-            response = self.client_logged_voluntario.post(url, data)
+        # Deve dar erro 404 (get_object_or_404 com voluntario=request.user)
+        response = self.client_logged_voluntario.post(url, data)
+        self.assertEqual(response.status_code, 404)
 
 
 class TestHistoricoFiltros(FullFixturesMixin, TestCase):
