@@ -9,6 +9,33 @@
 
 **Tecnologia:** Unittest nativo do Django (django.test.TestCase)
 
+## Resumo de Testes Unitários por Módulo
+
+| Módulo | Testes Unitários |
+|--------|------------------|
+| **1. Módulo Usuário (Voluntários e Organizadores)** | **76 testes** |
+| **2. Módulo Ações Comunitárias** | **62 testes** |
+| **3. Módulo Comunicação Básica** | **63 testes** |
+| **TOTAL** | **201 testes** |
+
+### Detalhamento por Módulo
+
+**Módulo 1 - Usuário (76 testes)**
+- `test_auth.py`: 16 testes (Signup, Signin, Logout)
+- `test_forms_auth.py`: 28 testes (Formulários de autenticação e perfil)
+- `test_perfil.py`: 21 testes (Model, Signal, View de perfil)
+- `test_permissions.py`: 30 testes (Permissões de organizador, voluntário, superuser, anônimo)
+
+**Módulo 2 - Ações Comunitárias (62 testes)**
+- `test_forms.py`: 16 testes (Formulário de ação)
+- `test_views_acoes.py`: 23 testes (CRUD de ações)
+- `test_models.py`: 16 testes (Models Acao, Inscricao, Notificacao)
+- `test_historico.py`: 17 testes (Histórico e comentários)
+
+**Módulo 3 - Comunicação Básica (63 testes)**
+- `test_views_inscricoes.py`: 41 testes (Inscrições, notificações, cancelamentos)
+- Testes de notificações automáticas incluídos
+
 ## Estrutura dos Testes
 
 ### Arquivos de Teste
@@ -220,44 +247,6 @@ def test_form_valido(self):
     form = AcaoForm(data=data)
     self.assertTrue(form.is_valid())
 ```
-
-## Estatísticas
-
-### Por Sprint
-
-**Sprint 1 - CRUD Ações + Inscrições:**
-- Modelos: 23 testes (test_models.py)
-- Formulários: 14 testes (test_forms.py)
-- Views CRUD: 28 testes (test_views_acoes.py)
-
-**Sprint 2 - Autenticação e Permissões:**
-- Autenticação: 25 testes (test_auth.py)
-- Formulários de Auth: 38 testes (test_forms_auth.py)
-- Permissões: 34 testes (test_permissions.py)
-- Perfil: 21 testes (test_perfil.py)
-
-**Sprint 3 - Notificações e Histórico:**
-- Views de Inscrições: 51 testes (test_views_inscricoes.py)
-- Histórico: 19 testes (test_historico.py)
-
-### Totais
-
-- **Arquivos de teste:** 10
-- **Classes de teste:** ~40
-- **Métodos de teste:** ~253
-- **Linhas de código:** ~5.000
-- **Cobertura esperada:** > 90%
-
-### Boas Práticas
-
-1. **Nomenclatura clara:** `test_nome_descritivo_do_comportamento`
-2. **Um conceito por teste:** Teste apenas uma coisa por método
-3. **IDs de rastreamento:** Use IDs CT-XXX.N para rastreabilidade
-4. **Docstrings completos:** Descreva o que está sendo testado e o resultado esperado
-5. **Arrange-Act-Assert:** Organize o código do teste em 3 seções
-6. **Use subTest:** Para testar múltiplos valores similares
-7. **Fixtures apropriadas:** Use apenas os mixins necessários
-
 ## Comandos Úteis
 
 ```bash
